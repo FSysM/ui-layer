@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 
-import { Header }  from "@/components/layout/Header";
+import Header from "@/components/layout/Header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Sidepanel } from "@/components/layout/Sidepanel";
 
