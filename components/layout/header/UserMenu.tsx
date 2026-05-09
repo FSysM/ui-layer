@@ -16,8 +16,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useMe } from "@/features/auth/hooks/useMe"
 
 export function UserMenu() {
+  const { data: user } = useMe()
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -33,15 +36,15 @@ export function UserMenu() {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="" alt="@user" />
                     <AvatarFallback>
-                      DU
+                      {user?.name?.[0] ?? 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>Dummy User</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.name ?? 'User'}</DropdownMenuLabel>
                   <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                    Role
+                    {user?.role}
                   </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

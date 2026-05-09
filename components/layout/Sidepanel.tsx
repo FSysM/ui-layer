@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useMe } from "@/features/auth/hooks/useMe"
 
 const sidebarItems = [
   { name: "Home", href: "/dashboard/home", icon: Home },
@@ -18,6 +19,8 @@ const sidebarItems = [
 ];
 
 export function Sidepanel() {
+  const { data: user } = useMe()
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -39,8 +42,12 @@ export function Sidepanel() {
       </SidebarContent>
 
       <SidebarFooter>
-        <h2 className="text-lg font-bold">John Doe</h2>
-        <p>Role</p>
+        <h2 className="text-lg font-bold">
+          {user?.name ?? 'Loading...'}
+        </h2>
+        <p>
+          {user?.role ?? ''}
+        </p>
        </ SidebarFooter>
       <SidebarRail />
     </Sidebar>
