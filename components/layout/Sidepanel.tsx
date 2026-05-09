@@ -13,7 +13,7 @@ import {
 const sidebarItems = [
   { name: "Home", href: "/dashboard/home", icon: Home },
   { name: "Browse", href: "/dashboard/browse", icon: Compass },
-  { name: "My Theses", href: "/dashboard/theses", icon: BookOpen },
+  { name: "Tasks", href: "/dashboard/tasks", icon: BookOpen },
   { name: "Reviews", href: "/dashboard/reviews", icon: MessageSquare },
 ];
 
