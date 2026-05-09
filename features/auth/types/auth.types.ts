@@ -1,7 +1,8 @@
 export type User = {
   id: string
   username: string
-  role: string
+  name?: string
+  role: 'STUDENT' | 'TEACHER' | 'GUEST'
 }
 
 export type LoginRequest = {
@@ -10,6 +11,6 @@ export type LoginRequest = {
 }
 
 export type LoginResponse = {
-  access_token: string
+  accessToken: string
   user: User
 }

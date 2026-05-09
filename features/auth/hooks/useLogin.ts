@@ -14,7 +14,7 @@ export function useLogin() {
     onSuccess: (data) => {
       setAuth(
         data.user,
-        data.access_token
+        data.accessToken
       )
       // redirect
       router.push('/dashboard/home')
