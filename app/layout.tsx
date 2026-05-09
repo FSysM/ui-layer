@@ -2,12 +2,13 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { JetBrains_Mono as Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { QueryProvider } from '@/providers/query-provider'
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata = {
-  title: "Thesys",
-  description: "Systém pro evidenci závěrečných prací",
+  title: "FSysM",
+  description: "File System Manager",
   icons: {
     icon: '/book.svg',
   },
@@ -28,7 +29,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         className={`h-full bg-background font-sans antialiased ${geist.variable}`}
       >
         <main className="h-full overflow-y-auto">
-          {children}
+          <QueryProvider>
+            {children}
+          </QueryProvider>
         </main>
       </body>
       </html>

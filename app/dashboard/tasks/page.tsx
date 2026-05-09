@@ -1,8 +1,8 @@
-import { columns, Payment } from "@/components/table/columns"
+import { columns, MyTasks } from "@/components/table/my-tasks.columns"
 import { DataTable } from "@/components/table/data-table"
 
 
-async function getData(): Promise<Payment[]> {
+async function getData(): Promise<MyTasks[]> {
   return [
     {
       id: "728ed52f",
