@@ -14,6 +14,7 @@ import { useMe } from "@/features/auth/hooks/useMe"
 const sidebarItems = [
   { name: "Home", href: "/dashboard/home", icon: Home },
   { name: "Browse", href: "/dashboard/browse", icon: Compass },
+  { name: "Assignments", href: "/dashboard/assignments", icon: BookOpen },
   { name: "Tasks", href: "/dashboard/tasks", icon: BookOpen },
   { name: "Reviews", href: "/dashboard/reviews", icon: MessageSquare },
 ];

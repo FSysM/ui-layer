@@ -1,3 +1,5 @@
+"use client"
+
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,9 +19,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useMe } from "@/features/auth/hooks/useMe"
+import { useLogout } from "@/features/auth/hooks/useLogout"
 
 export function UserMenu() {
   const { data: user } = useMe()
+  const handleLogout = useLogout()
 
   return (
     <TooltipProvider>
@@ -56,7 +60,7 @@ export function UserMenu() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                 </DropdownMenuItem>

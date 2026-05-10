@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,80 +14,94 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useLogin } from '@/features/auth/hooks/useLogin'
+import { loginSchema, LoginFormData } from '@/features/auth/schemas/login.schema'
 
 
 export default function LoginPage() {
   const loginMutation = useLogin()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
 
-  function handleSubmit(
-    e: React.FormEvent
-  ) {
-    e.preventDefault()
-    loginMutation.mutate({
-      username,
-      password
-    })
+  function onSubmit(data: LoginFormData) {
+    loginMutation.mutate(data)
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-    <Card className="w-full max-w-sm" >
-      <CardHeader>
-        <CardTitle>FSysM</CardTitle>
-        <CardDescription>Login to the app</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="username-rtl">Username</Label>
-              <Input
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>FSysM</CardTitle>
+          <CardDescription>Login to the app</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-6">
+              {/* Username Field */}
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
                   type="text"
-                  placeholder="Username"
-                  required
-                  value={username}
-                  onChange={(e) =>
-                  setUsername(e.target.value)
-                  }
+                  placeholder="Enter your username"
+                  {...register('username')}
+                  aria-invalid={errors.username ? 'true' : 'false'}
                 />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password-rtl">Password</Label>
+                {errors.username && (
+                  <span className="text-sm text-red-500">
+                    {errors.username.message}
+                  </span>
+                )}
               </div>
-              <Input
+
+              {/* Password Field */}
+              <div className="grid gap-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
                   type="password"
-                  required
-                  placeholder="Password"
-
-                  value={password}
-
-                  onChange={(e) =>
-                  setPassword(e.target.value)
-                  }
+                  placeholder="Enter your password"
+                  {...register('password')}
+                  aria-invalid={errors.password ? 'true' : 'false'}
                 />
+                {errors.password && (
+                  <span className="text-sm text-red-500">
+                    {errors.password.message}
+                  </span>
+                )}
+              </div>
+
+              {/* Error message from API */}
+              {loginMutation.error && (
+                <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+                  {loginMutation.error instanceof Error
+                    ? loginMutation.error.message
+                    : 'Login failed. Please try again.'}
+                </div>
+              )}
             </div>
-            </div>
+
+            {/* Submit Button */}
             <Button
               type="submit"
               className="w-full mt-6"
+              disabled={loginMutation.isPending}
             >
-
-              {loginMutation.isPending
-                ? 'Loading...'
-                : 'Login'}
-
+              {loginMutation.isPending ? 'Loading...' : 'Login'}
             </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex-col gap-2">
-        <Button variant="outline" className="w-full">
-          Continue as a guest
-        </Button>
-      </CardFooter>
+          </form>
+        </CardContent>
+
+        <CardFooter className="flex-col gap-2">
+          <Button variant="outline" className="w-full">
+            Continue as a guest
+          </Button>
+        </CardFooter>
       </Card>
-      </div>
+    </div>
   )
 }
