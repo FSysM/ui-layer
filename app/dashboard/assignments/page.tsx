@@ -1,21 +1,15 @@
-import { columns, Assignments } from "@/components/table/assignments.columns"
+'use client'
+
+import { columns } from "@/components/table/assignments.columns"
 import { DataTable } from "@/components/table/data-table"
+import { useAssignments } from '@/features/assignments/hooks/useAssignments'
 
 
-async function getData(): Promise<Assignments[]> {
-  return [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-  ]
-}
 
-
-export default async function Assignments() { 
-  const data = await getData()
+export default function Assignments() { 
+  const assignmentsQuery = useAssignments()
+    
+    const data = assignmentsQuery.data ?? []
   return (
     <div >
       <h1 className="text-3xl font-bold">Available assignments</h1>
