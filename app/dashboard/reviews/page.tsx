@@ -1,21 +1,16 @@
-import { columns, Payment } from "@/components/table/columns"
+'use client';
+
+import { columns } from "@/components/table/reviews.columns"
 import { DataTable } from "@/components/table/data-table"
+import { useReviews } from "@/features/reviews/hooks/useReviews";
 
 
-async function getData(): Promise<Payment[]> {
-  return [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
-    },
-  ]
-}
 
 
-export default async function ReviewsPage() { 
-  const data = await getData()
+export default function ReviewsPage() { 
+  const submissionsQuery = useReviews()
+    
+    const data = submissionsQuery.data ?? []
   return (
     <div >
       <h1 className="text-3xl font-bold">Reviewed theses</h1>
@@ -25,9 +20,3 @@ export default async function ReviewsPage() {
       </div>
   );
 };
-
-
-
-
-
-

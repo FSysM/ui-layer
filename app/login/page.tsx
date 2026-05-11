@@ -15,10 +15,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useLogin } from '@/features/auth/hooks/useLogin'
 import { loginSchema, LoginFormData } from '@/features/auth/schemas/login.schema'
+import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 
 export default function LoginPage() {
   const loginMutation = useLogin()
+  const router = useRouter()
+  const setGuest = useAuthStore((s) => s.setGuest)
   const {
     register,
     handleSubmit,
@@ -29,6 +33,11 @@ export default function LoginPage() {
 
   function onSubmit(data: LoginFormData) {
     loginMutation.mutate(data)
+  }
+
+  function handleContinueAsGuest() {
+    setGuest()
+    router.push('/dashboard/home')
   }
 
   return (
@@ -97,7 +106,12 @@ export default function LoginPage() {
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button variant="outline" className="w-full">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleContinueAsGuest}
+          >
             Continue as a guest
           </Button>
         </CardFooter>

@@ -5,14 +5,35 @@ export const api = axios.create({
 	withCredentials: true,
 });
 
+// Request interceptor: Add Authorization header
+api.interceptors.request.use((config) => {
+	if (typeof window !== 'undefined') {
+		const token = sessionStorage.getItem('accessToken');
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		}
+	}
+	return config;
+});
+
+// Response interceptor: Handle 401 with token refresh or redirect
 api.interceptors.response.use(
 	(response) => response,
 	async (error) => {
 		const original = error.config;
-
 		const isAuthRoute = original.url?.includes('/auth/');
+		const token =
+			typeof window !== 'undefined'
+				? sessionStorage.getItem('accessToken')
+				: null;
 
-		if (error.response?.status === 401 && !original._retry && !isAuthRoute) {
+		// Try refresh only if we have a token and haven't already retried
+		if (
+			error.response?.status === 401 &&
+			!original._retry &&
+			!isAuthRoute &&
+			token
+		) {
 			original._retry = true;
 
 			try {

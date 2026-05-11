@@ -6,6 +6,14 @@ export type Assignments = {
 	assignmentDate: string;
 	topic: string;
 	type: string;
-	student: string;
-	supervisor: string;
+	taken: boolean;
+	student: {
+		id: string;
+		name: string | null;
+	};
+
+	supervisor: {
+		id: string;
+		name: string;
+	};
 };

@@ -15,11 +15,15 @@ export const columns: ColumnDef<Assignments>[] = [
     header: "Type",
   },
   {
-    accessorKey: "student",
+    accessorKey: "student.name",
     header: "Student",
   },
   {
-    accessorKey: "supervisor",
+    accessorKey: "supervisor.name",
     header: "Supervisor",
+  },
+  {
+    accessorKey: "taken",
+    header: "Taken",
   },
 ]

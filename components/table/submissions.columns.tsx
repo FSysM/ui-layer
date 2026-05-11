@@ -7,7 +7,7 @@ import { Submissions } from "@/features/submissions/types/submissions.types"
 
 export const columns: ColumnDef<Submissions>[] = [
   {
-    accessorKey: "topic",
+    accessorKey: "assignment.topic",
     header: "Topic",
   },
   {
@@ -15,19 +15,19 @@ export const columns: ColumnDef<Submissions>[] = [
     header: "Status",
   },
   {
-    accessorKey: "type",
+    accessorKey: "assignment.type",
     header: "Type",
   },
   {
-    accessorKey: "student",
+    accessorKey: "assignment.student.name",
     header: "Student",
   },
   {
-    accessorKey: "opponent",
+    accessorKey: "opponent.name",
     header: "Opponent",
   },
   {
-    accessorKey: "supervisor",
+    accessorKey: "assignment.supervisor.name",
     header: "Supervisor",
   },
 ]
