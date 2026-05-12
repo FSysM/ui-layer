@@ -1,6 +1,12 @@
 import { api } from '@/lib/api';
+import { SubmissionsFormData } from '../schemas/submissions.schema';
 
 export async function getSubmissions() {
 	const res = await api.get('/submissions');
+	return res.data;
+}
+
+export async function createSubmission(data: SubmissionsFormData) {
+	const res = await api.post('/submissions', data);
 	return res.data;
 }

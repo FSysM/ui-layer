@@ -1,21 +1,44 @@
 'use client'
 
+import { useState } from "react"
 import { columns } from "@/components/table/assignments.columns"
 import { DataTable } from "@/components/table/data-table"
-import { useAssignments } from '@/features/assignments/hooks/useAssignments'
-
-
+import { useAssignments, createAssignmentMutation } from '@/features/assignments/hooks/useAssignments'
+import { AssignmentsForm } from "@/components/form/assignments/assignemts.form"
+import { AssignmentFormData } from '@/features/assignments/schemas/assignments.schema'
+import PageHeader from "@/components/layout/PageHeader"
 
 export default function Assignments() { 
+  const [open, setOpen] = useState(false)
   const assignmentsQuery = useAssignments()
-    
-    const data = assignmentsQuery.data ?? []
+  const createAssignment = createAssignmentMutation()
+
+  function handleCreateAssignment(data: AssignmentFormData) {
+    console.log('Creating assignment with data:', data)
+    createAssignment.mutate(data, {
+      onSuccess: () => {
+        assignmentsQuery.refetch()
+        setOpen(false)
+      },
+    })
+  }
+
+  const data = assignmentsQuery.data ?? []
   return (
-    <div >
-      <h1 className="text-3xl font-bold">Available assignments</h1>
+    <div>
+      <PageHeader
+        title="Assignments"
+        actions={
+          <AssignmentsForm
+            open={open}
+            onOpenChange={setOpen}
+            onSubmit={handleCreateAssignment}
+          />
+        }
+      />
       <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
-    </div>
+        <DataTable columns={columns} data={data} />
       </div>
+    </div>
   );
 };

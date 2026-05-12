@@ -2,6 +2,7 @@ import { CardImage } from "@/components/dashboard/Card"
 import { CalendarView } from "@/components/dashboard/Calendar"
 import { columns, Payment } from "@/components/table/columns"
 import { DataTable } from "@/components/table/data-table"
+import PageHeader from "@/components/layout/PageHeader"
 
 async function getData(): Promise<Payment[]> {
   return [
@@ -18,7 +19,7 @@ export default async function HomePage() {
   const data = await getData()
   return (
     <div className="">
-      <h1 className="text-3xl font-bold">DASHBOARD</h1>
+      <PageHeader title="Dashboard" />
       <div className="flex">
         <CardImage />
         <CardImage />
