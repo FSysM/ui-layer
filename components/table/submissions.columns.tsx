@@ -1,33 +1,31 @@
-'use client'
+"use client"
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Submissions } from "@/features/submissions/types/submissions.types"
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { buildColumns } from "@/components/table/build-columns"
+import { Assignments } from "@/features/assignments/types/assignments.types"
 
+export const columns = buildColumns<Submissions>(
+  [
+    { accessorKey: "assignment.topic", header: "Topic" },
+    { accessorKey: "assignment.type", header: "Type" },
+    { accessorKey: "student.name", header: "Student" },
+    { accessorKey: "supervisor.name", header: "Supervisor" },
+    { accessorKey: "taken", header: "Taken" },
+  ],
 
+  (submission) => (
+    <>
+      <DropdownMenuItem
+        onClick={() => console.log("Edit", submission.id)}
+      >
+        Edit
+      </DropdownMenuItem>
 
-export const columns: ColumnDef<Submissions>[] = [
-  {
-    accessorKey: "assignment.topic",
-    header: "Topic",
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-  },
-  {
-    accessorKey: "assignment.type",
-    header: "Type",
-  },
-  {
-    accessorKey: "assignment.student.name",
-    header: "Student",
-  },
-  {
-    accessorKey: "opponent.name",
-    header: "Opponent",
-  },
-  {
-    accessorKey: "assignment.supervisor.name",
-    header: "Supervisor",
-  },
-]
+      <DropdownMenuItem
+        onClick={() => console.log("Delete", submission.id)}
+      >
+        Delete
+      </DropdownMenuItem>
+    </>
+  )
+)

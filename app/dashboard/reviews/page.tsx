@@ -3,8 +3,7 @@
 import { columns } from "@/components/table/reviews.columns"
 import { DataTable } from "@/components/table/data-table"
 import { useReviews } from "@/features/reviews/hooks/useReviews";
-
-
+import PageHeader from "@/components/layout/PageHeader"
 
 
 export default function ReviewsPage() { 
@@ -13,10 +12,8 @@ export default function ReviewsPage() {
     const data = submissionsQuery.data ?? []
   return (
     <div >
-      <h1 className="text-3xl font-bold">Reviewed theses</h1>
-      <div className="container mx-auto py-10">
+      <PageHeader title="Reviews" />
       <DataTable columns={columns} data={data} />
     </div>
-      </div>
   );
 };

@@ -15,9 +15,7 @@ export default function BrowsePage() {
   return (
     <div >
       <PageHeader title="Browse Submissions" />
-      <div className="container mx-auto py-10">
       <DataTable columns={columns} data={data} />
     </div>
-      </div>
   );
 };

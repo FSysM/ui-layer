@@ -39,9 +39,7 @@ export default function SubmissionsPage() {
                 />
               }
             />
-      <div className="container mx-auto py-10">
       <DataTable columns={columns} data={data} />
     </div>
-      </div>
   );
 };

@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       <body
         className={`h-full bg-background font-sans antialiased ${geist.variable}`}
       >
-        <main className="h-full overflow-y-auto">
+        <main className="h-full ">
           <QueryProvider>
             {children}
           </QueryProvider>
