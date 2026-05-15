@@ -66,7 +66,6 @@ export function AssignmentsForm({
 
   const label = submitLabel ?? (mode === 'edit' ? 'Save' : 'Create')
 
-  // ✅ KEY PART — fill form on edit
   useEffect(() => {
     if (open) {
       reset(
