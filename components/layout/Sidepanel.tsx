@@ -1,4 +1,4 @@
-import { Home, Compass, BookOpen, MessageSquare } from "lucide-react";
+import { Home, Compass, BookOpen } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,11 +12,10 @@ import {
 import { useMe } from "@/features/auth/hooks/useMe"
 
 const sidebarItems = [
-  { name: "Home", href: "/dashboard/home", icon: Home },
-  { name: "Browse", href: "/dashboard/browse", icon: Compass },
-  { name: "Assignments", href: "/dashboard/assignments", icon: BookOpen },
-  { name: "Submissions", href: "/dashboard/submissions", icon: BookOpen },
-  { name: "Reviews", href: "/dashboard/reviews", icon: MessageSquare },
+  { name: "Home", href: "/dashboard/home", icon: Home, public: false },
+  { name: "Browse", href: "/dashboard/browse", icon: Compass, public: true },
+  { name: "Assignments", href: "/dashboard/assignments", icon: BookOpen, public: true },
+  { name: "Submissions", href: "/dashboard/submissions", icon: BookOpen, public: false },
 ];
 
 export function Sidepanel() {
@@ -29,7 +28,7 @@ export function Sidepanel() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {sidebarItems.map((item) => (
+          {sidebarItems.filter((item) => item.public || user).map((item) => (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
                 <a href={item.href}>

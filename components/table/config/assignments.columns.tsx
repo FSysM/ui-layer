@@ -11,17 +11,6 @@ export type ActionConfig<T> = {
   onClick: (row: T) => void
 }
 
-export const assignmentActions: ActionConfig<Assignments>[] = [
-  {
-    label: "Edit",
-    onClick: (row: Assignments) => console.log("Edit", row.id),
-  },
-  {
-    label: "Delete",
-    onClick: (row: Assignments) => console.log("Delete", row.id),
-  },
-]
-
 export type ExpandField<T> = {
   label: string
   accessor: keyof T
@@ -37,31 +26,33 @@ export const renderExpanded = (row: Assignments) => (
   <Expand row={row} config={expandFields} />
 )
 
-export const columns = buildColumns<Assignments>(
-  [
-    { accessorKey: "topic", header: "Topic" },
-    { accessorKey: "type", header: "Type" },
-    { accessorKey: "student.name", header: "Student" },
-    { accessorKey: "supervisor.name", header: "Supervisor" },
+export function buildAssignmentColumns(actions: ActionConfig<Assignments>[]) {
+  return buildColumns<Assignments>(
+    [
+      { accessorKey: "topic", header: "Topic" },
+      { accessorKey: "type", header: "Type" },
+      { accessorKey: "student.name", header: "Student" },
+      { accessorKey: "supervisor.name", header: "Supervisor" },
+      {
+        accessorKey: "taken",
+        header: "Free",
+        cell: ({ row }: any) =>
+          row.original.taken ? (
+            <XCircle className="h-4 w-4 text-destructive" />
+          ) : (
+            <CheckCircle className="h-4 w-4 text-emerald-600" />
+          ),
+      },
+    ],
     {
-      accessorKey: "taken",
-      header: "Free",
-      cell: ({ row }: any) =>
-        row.original.taken ? (
-          <XCircle className="h-4 w-4 text-destructive" />
-        ) : (
-          <CheckCircle className="h-4 w-4 text-emerald-600" />
+      actions: {
+        id: "actions",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Actions row={row.original} actions={actions} />
         ),
-    },
-  ],
-  {
-    actions: {
-      id: "actions",
-      enableSorting: false,
-      cell: ({ row }) => (
-        <Actions row={row.original} actions={assignmentActions} />
-      ),
-    },
-    expandFields,
-  }
-)
+      },
+      expandFields,
+    }
+  )
+}
