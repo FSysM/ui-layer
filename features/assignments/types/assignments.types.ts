@@ -1,4 +1,5 @@
 export type Assignments = {
+	id: string;
 	faculty: string;
 	department: string;
 	annotation: string;

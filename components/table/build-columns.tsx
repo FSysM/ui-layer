@@ -1,64 +1,61 @@
-"use client"
-
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 type ColumnConfig<T> = {
   accessorKey: keyof T | string
   header: string
+  sortable?: boolean
+}
+
+type ExpandField<T> = {
+  label: string
+  accessor: keyof T
+}
+
+type BuildOptions<T> = {
+  actions?: ColumnDef<T>
+  expandFields?: ExpandField<T>[]
 }
 
 export function buildColumns<T>(
   configs: ColumnConfig<T>[],
-  actions?: (row: T) => React.ReactNode
+  options?: BuildOptions<T>
 ): ColumnDef<T>[] {
-  const columns: ColumnDef<T>[] = configs.map((config) => ({
-    accessorKey: config.accessorKey,
 
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }
-        >
-          {config.header}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-  }))
+  const columns: ColumnDef<T>[] = []
 
-  if (actions) {
+  // 1. EXPAND COLUMN (AUTO)
+  if (options?.expandFields?.length) {
     columns.push({
-      id: "actions",
-
-      cell: ({ row }) => {
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              {actions(row.original)}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
+      id: "expand",
+      header: () => null,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <button onClick={() => row.toggleExpanded()}>
+          {row.getIsExpanded() ? "▼" : "▶"}
+        </button>
+      ),
     })
+  }
+
+  // 2. NORMAL COLUMNS
+  configs.forEach((col) => {
+    columns.push({
+      id: String(col.accessorKey),
+      accessorKey: col.accessorKey as string,
+      enableSorting: col.sortable ?? true,
+      header: ({ column }) => (
+        <button onClick={() =>
+          column.toggleSorting(column.getIsSorted() === "asc")
+        }>
+          {col.header}
+        </button>
+      ),
+    })
+  })
+
+  // 3. ACTIONS
+  if (options?.actions) {
+    columns.push(options.actions)
   }
 
   return columns

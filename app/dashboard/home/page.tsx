@@ -1,6 +1,6 @@
 import { CardImage } from "@/components/dashboard/Card"
 import { CalendarView } from "@/components/dashboard/Calendar"
-import { columns, Payment } from "@/components/table/build-columns"
+import { columns } from "@/components/table/build-columns"
 import { DataTable } from "@/components/table/data-table"
 import PageHeader from "@/components/layout/PageHeader"
 
@@ -32,7 +32,7 @@ export default async function HomePage() {
         <div >
           <h2 className="text-3xl font-bold">Events</h2>
           <div className="container mx-auto py-10">
-            <DataTable columns={columns} data={data} />
+            {/* <DataTable columns={columns} data={data} /> */}
           </div>
         </div>
       </div>

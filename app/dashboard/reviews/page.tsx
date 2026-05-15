@@ -1,6 +1,6 @@
 'use client';
 
-import { columns } from "@/components/table/reviews.columns"
+import { columns } from "@/components/table/config/reviews.columns"
 import { DataTable } from "@/components/table/data-table"
 import { useReviews } from "@/features/reviews/hooks/useReviews";
 import PageHeader from "@/components/layout/PageHeader"

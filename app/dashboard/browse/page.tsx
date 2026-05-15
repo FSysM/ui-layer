@@ -1,6 +1,6 @@
 'use client'
 
-import { columns } from "@/components/table/submissions.columns"
+import { columns } from "@/components/table/config/submissions.columns"
 import { DataTable } from "@/components/table/data-table"
 import { useSubmissions } from '@/features/submissions/hooks/useSubmissions'
 import PageHeader from "@/components/layout/PageHeader"

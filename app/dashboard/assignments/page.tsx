@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { columns } from "@/components/table/assignments.columns"
+import { columns, renderExpanded } from "@/components/table/config/assignments.columns"
 import { DataTable } from "@/components/table/data-table"
 import { useAssignments, createAssignmentMutation } from '@/features/assignments/hooks/useAssignments'
 import { AssignmentsForm } from "@/components/form/assignments/assignemts.form"
@@ -36,7 +36,7 @@ export default function Assignments() {
           />
         }
       />
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} renderExpanded={renderExpanded} />
     </div>
   );
 };

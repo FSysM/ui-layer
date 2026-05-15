@@ -23,9 +23,9 @@ export function Sidepanel() {
   const { data: user } = useMe()
 
   return (
-    <Sidebar>
+    <Sidebar className="w-64" >
       <SidebarHeader>
-        Thesys
+        FSysM
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -44,7 +44,7 @@ export function Sidepanel() {
 
       <SidebarFooter>
         <h2 className="text-lg font-bold">
-          {user?.name ?? 'Loading...'}
+          {user?.name ?? ''}
         </h2>
         <p>
           {user?.role ?? ''}

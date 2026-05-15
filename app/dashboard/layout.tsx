@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Sidepanel />
         <SidebarInset>
         <Header />
-          <main className="flex flex-col gap-6 min-h-screen m-4 mx-auto">{children}</main>
+          <main className="flex flex-col gap-6 min-h-screen m-8 mx-auto">{children}</main>
         </SidebarInset>
       </SidebarProvider>
   );

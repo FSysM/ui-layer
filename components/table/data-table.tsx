@@ -12,34 +12,33 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  getExpandedRowModel 
 } from "@tanstack/react-table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
+
+import { Pagination } from "./components/pagiantion"
+import { Header } from "./components/header"
+import { Search } from "./components/search"
+import { ColumnFilter } from "./components/filter"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  
+  renderExpanded?: (row: TData) => React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  renderExpanded
 }: DataTableProps<TData, TValue>) {
+  
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState("")
   const [pagination, setPagination] = React.useState({
@@ -48,6 +47,7 @@ export function DataTable<TData, TValue>({
   })
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
+  const [expanded, setExpanded] = React.useState({})
 
   const table = useReactTable({
     data,
@@ -57,150 +57,67 @@ export function DataTable<TData, TValue>({
       globalFilter,
       columnVisibility,
       pagination,
+      expanded,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
+    onExpandedChange: setExpanded,
 
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
+    getExpandedRowModel: getExpandedRowModel(),
     globalFilterFn: "includesString",
   })
 
   return (
     <div>
+      {/* Search and filter controls */ }
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Search..."
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
-        />
-      <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter(
-                (column) => column.getCanHide()
-              )
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Search */}
+        <Search table={table} />
+        {/* Filter columns */}
+        <ColumnFilter table={table} />
       </div>
-    <div className="overflow-hidden rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      {/* Table */}
+      <div className="overflow-hidden rounded-md border">
+        <Table className="w-full">
+          {/* Table header */ }
+          <Header table={table} />
+          {/* Table body */ }
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <React.Fragment key={row.id}>
+                
+                {/* MAIN ROW */}
+                <TableRow data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+
+                {/* EXPANDED ROW */}
+                {row.getIsExpanded() && renderExpanded && (
+                  <TableRow>
+                    <TableCell colSpan={row.getVisibleCells().length}>
+                      {renderExpanded(row.original)}
+                    </TableCell>
+                  </TableRow>
+                )}
+
+              </React.Fragment>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       { /* Pagination controls */ }
-      {table.getPageCount() > 1 && ( 
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Select
-          value={`${pagination.pageSize}`}
-          onValueChange={(value) => {
-            setPagination((prev) => ({
-              ...prev,
-              pageSize: Number(value),
-              pageIndex: 0,
-            }))
-          }}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Rows" />
-          </SelectTrigger>
-          <SelectContent>
-            {[5, 10, 15, 20, 50].map((size) => (
-              <SelectItem key={size} value={`${size}`}>
-                {size} / page
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-
-      </div>
-    )}
+      <Pagination table={table} />
   </div>
   )
 }
