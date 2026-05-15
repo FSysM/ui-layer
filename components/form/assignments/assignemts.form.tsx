@@ -99,7 +99,7 @@ export function AssignmentsForm({
       <DialogContent className="sm:max-w-sm animate-in fade-in slide-in-from-bottom-4 zoom-in-95 duration-300">
 
         <form className="contents" onSubmit={handleSubmit(onSubmit)}>
-
+          { /* HEADER */}
           <DialogHeader>
             <DialogTitle>
               {mode === 'edit' ? 'Edit Assignment' : 'Create Assignment'}

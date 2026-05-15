@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { submissionsSchema, SubmissionsFormData } from '@/features/submissions/schemas/submissions.schema'
@@ -25,29 +28,45 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
+import { Submissions } from '@/features/submissions/types/submissions.types'
+
 interface SubmissionsFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit: (data: SubmissionsFormData) => void
+
+  mode?: 'create' | 'edit'
+  defaultValues?: Submissions | null
+  submitLabel?: string
 }
 
-export function SubmissionsForm({ open, onOpenChange, onSubmit }: SubmissionsFormProps) {
-    const { register, handleSubmit, control, formState: { errors } } = useForm<SubmissionsFormData>({
+export function SubmissionsForm({ open, onOpenChange,mode = 'create', defaultValues, submitLabel, onSubmit }: SubmissionsFormProps) {
+    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SubmissionsFormData>({
         resolver: zodResolver(submissionsSchema),
     })
+  
+  const label = submitLabel ?? (mode === 'edit' ? 'Edit' : 'Submit')
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline">Create</Button>
+        <Button type="button" variant="outline" className='bg-green-600'>Submit</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <form className='contents' onSubmit={handleSubmit(onSubmit)}>
           { /* HEADER */}
           <DialogHeader>
-            <DialogTitle>Create Assignment</DialogTitle>
+            <DialogTitle>{mode === 'edit' ? 'Edit Submission' : 'Create Submission'}</DialogTitle>
             <DialogDescription>
-              Create a new assignment. Click save when you&apos;re done.
+              {mode === 'edit'
+                ? 'Edit submission and save changes.'
+                : 'Create a new submission. Click save when you&apos;re done.'}
             </DialogDescription>
           </DialogHeader>
           <FieldGroup>
@@ -143,7 +162,7 @@ export function SubmissionsForm({ open, onOpenChange, onSubmit }: SubmissionsFor
             <DialogClose asChild>
               <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Create</Button>
+            <Button type="submit">{label}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
