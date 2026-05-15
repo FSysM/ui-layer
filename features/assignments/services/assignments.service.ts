@@ -20,3 +20,13 @@ export async function deleteAssignment(id: string) {
 	const res = await api.delete('/assignments', { data: { id } });
 	return res.data;
 }
+
+export async function pickAssignment(id: string) {
+	const res = await api.post(`/assignments/${id}/pick`);
+	return res.data;
+}
+
+export async function unpickAssignment(id: string) {
+	const res = await api.post(`/assignments/${id}/unpick`);
+	return res.data;
+}

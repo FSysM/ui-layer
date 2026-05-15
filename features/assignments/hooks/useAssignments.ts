@@ -4,6 +4,8 @@ import {
 	createAssignment,
 	updateAssignment,
 	deleteAssignment,
+	pickAssignment,
+	unpickAssignment,
 } from '../services/assignments.service';
 
 const QUERY_KEY = ['assignments'];
@@ -35,11 +37,23 @@ export function useAssignments() {
 		onSuccess: invalidate,
 	});
 
+	const pick = useMutation({
+		mutationFn: pickAssignment,
+		onSuccess: invalidate,
+	});
+
+	const unpick = useMutation({
+		mutationFn: unpickAssignment,
+		onSuccess: invalidate,
+	});
+
 	return {
 		...query,
 
 		create,
 		update,
 		remove,
+		pick,
+		unpick,
 	};
 }
