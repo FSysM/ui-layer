@@ -4,6 +4,7 @@ import { buildColumns } from "@/components/table/build-columns"
 import { Assignments } from "@/features/assignments/types/assignments.types"
 import { Actions } from "@/components/table/components/actions"
 import { Expand } from "@/components/table/components/expand"
+import { CheckCircle, XCircle } from "lucide-react"
 
 export type ActionConfig<T> = {
   label: string
@@ -42,7 +43,16 @@ export const columns = buildColumns<Assignments>(
     { accessorKey: "type", header: "Type" },
     { accessorKey: "student.name", header: "Student" },
     { accessorKey: "supervisor.name", header: "Supervisor" },
-    { accessorKey: "taken", header: "Taken" },
+    {
+      accessorKey: "taken",
+      header: "Free",
+      cell: ({ row }: any) =>
+        row.original.taken ? (
+          <XCircle className="h-4 w-4 text-destructive" />
+        ) : (
+          <CheckCircle className="h-4 w-4 text-emerald-600" />
+        ),
+    },
   ],
   {
     actions: {

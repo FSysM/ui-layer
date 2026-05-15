@@ -30,15 +30,15 @@ export default function SubmissionsPage() {
   return (
     <div >
       <PageHeader
-              title="Submissions"
-              actions={
-                <SubmissionsForm
-                  open={open}
-                  onOpenChange={setOpen}
-                  onSubmit={handleCreateSubmissions}
-                />
-              }
-            />
+        title="Submissions"
+        actions={
+          <SubmissionsForm
+            open={open}
+            onOpenChange={setOpen}
+            onSubmit={handleCreateSubmissions}
+          />
+        }
+      />
       <DataTable columns={columns} data={data} />
     </div>
   );

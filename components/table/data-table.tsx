@@ -74,7 +74,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div>
+    <div className="min-w-0">
       {/* Search and filter controls */ }
       <div className="flex items-center py-4">
         {/* Search */}
@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({
       </div>
       {/* Table */}
       <div className="overflow-hidden rounded-md border">
-        <Table className="w-full">
+        <Table className="table-fixed w-full">
           {/* Table header */ }
           <Header table={table} />
           {/* Table body */ }
@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
                 {/* MAIN ROW */}
                 <TableRow data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="truncate">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -104,12 +104,26 @@ export function DataTable<TData, TValue>({
                 {/* EXPANDED ROW */}
                 {row.getIsExpanded() && renderExpanded && (
                   <TableRow>
-                    <TableCell colSpan={row.getVisibleCells().length}>
-                      {renderExpanded(row.original)}
+                    <TableCell
+                      colSpan={row.getVisibleCells().length}
+                      className="p-0 border-0 truncate"
+                    >
+                      <div
+                        className="
+                          overflow-hidden
+                          bg-muted/40
+                          px-4
+                          transition-all duration-300 ease-in-out
+                          animate-in fade-in slide-in-from-top-2
+                        "
+                      >
+                        <div className="py-4">
+                          {renderExpanded(row.original)}
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
-
               </React.Fragment>
             ))}
           </TableBody>

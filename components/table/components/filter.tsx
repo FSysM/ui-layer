@@ -24,10 +24,13 @@ export function ColumnFilter<TData>({ table }: SearchProps<TData>) {
           <DropdownMenuContent align="end">
             {table
               .getAllColumns()
-              .filter(
-                (column: any) => column.getCanHide()
-              )
+              .filter((column: any) => column.getCanHide())
               .map((column: any) => {
+                const header =
+                  typeof column.columnDef.header === "string"
+                    ? column.columnDef.header
+                    : column.columnDef.meta?.header ?? column.id
+
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -37,7 +40,7 @@ export function ColumnFilter<TData>({ table }: SearchProps<TData>) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {header}
                   </DropdownMenuCheckboxItem>
                 )
               })}

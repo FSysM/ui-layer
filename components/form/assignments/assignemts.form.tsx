@@ -41,7 +41,7 @@ export function AssignmentsForm({ open, onOpenChange, onSubmit }: AssignmentsFor
       <DialogTrigger asChild>
         <Button type="button" variant="outline">Create</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-sm animate-in fade-in slide-in-from-bottom-4 zoom-in-95 duration-300">
         <form className='contents' onSubmit={handleSubmit(onSubmit)}>
           { /* HEADER */}
           <DialogHeader>

@@ -5,6 +5,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
@@ -29,6 +30,8 @@ export function Actions<T>({ row, actions }: ActionsProps<T>) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
+        <span className="px-1 py-1.5 text-sm font-medium">Actions</span>
+        <DropdownMenuSeparator />
         {actions.map((action) => (
           <DropdownMenuItem
             key={action.label}
