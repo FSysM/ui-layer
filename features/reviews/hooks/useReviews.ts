@@ -8,3 +8,12 @@ export function useReviews() {
 		staleTime: 1000 * 60 * 2, // 2 min cache
 	});
 }
+
+export function useReview(id: string) {
+	return useQuery({
+		queryKey: ['reviews', id],
+		queryFn: () =>
+			getReviews().then((reviews) => reviews.find((r) => r.id === id)),
+		staleTime: 1000 * 60 * 2, // 2 min cache
+	});
+}

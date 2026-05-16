@@ -10,16 +10,16 @@ export type ActionConfig<T> = {
   onClick: (row: T) => void
 }
 
-export type ExpandField<T> = {
+export type ExpandField = {
   label: string
-  accessor: keyof T
+  accessor: string
 }
 
 export const expandFields = [
   { label: "Annotation", accessor: "assignment.annotation" },
   { label: "Faculty", accessor: "assignment.faculty" },
   { label: "Department", accessor: "assignment.department" },
-] satisfies ExpandField<Submissions>[]
+]
 
 export const renderExpanded = (row: Submissions) => (
   <Expand row={row} config={expandFields} />

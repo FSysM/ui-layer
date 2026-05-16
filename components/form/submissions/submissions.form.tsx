@@ -28,35 +28,67 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-import { Submissions } from '@/features/submissions/types/submissions.types'
+import { Submissions, SubmissionFormModel } from '@/features/submissions/types/submissions.types'
 
 interface SubmissionsFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit: (data: SubmissionsFormData) => void
+  onSubmit: (data: SubmissionFormModel) => void
+  values?: SubmissionFormModel
 
   mode?: 'create' | 'edit'
-  defaultValues?: Submissions | null
   submitLabel?: string
 }
 
-export function SubmissionsForm({ open, onOpenChange,mode = 'create', defaultValues, submitLabel, onSubmit }: SubmissionsFormProps) {
-    const { register, handleSubmit, control, reset, formState: { errors } } = useForm<SubmissionsFormData>({
-        resolver: zodResolver(submissionsSchema),
-    })
-  
-  const label = submitLabel ?? (mode === 'edit' ? 'Edit' : 'Submit')
+export function SubmissionsForm({
+  open,
+  onOpenChange,
+  mode = 'create',
+  onSubmit,
+  values,
+}: SubmissionsFormProps) {
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
 
-  useEffect(() => {
-    if (defaultValues) {
-      reset(defaultValues);
-    }
-  }, [defaultValues, reset]);
+    formState: { errors },
+
+  } = useForm<SubmissionFormModel>({
+    resolver: zodResolver(submissionsSchema),
+  })
+
+useEffect(() => {
+
+    if (!open) return
+
+    reset(
+      values ?? {
+        assignmentId: '',
+
+        topic: '',
+        type: '',
+        faculty: '',
+        department: '',
+        annotation: '',
+
+        literature: '',
+        fileUrl: '',
+      }
+    )
+
+  }, [open, values, reset])
+
+  const label =
+    mode === 'edit'
+      ? 'Save'
+      : 'Submit'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" className='bg-green-600'>Submit</Button>
+        <Button type="button" variant="outline">Submit</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <form className='contents' onSubmit={handleSubmit(onSubmit)}>

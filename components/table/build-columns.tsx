@@ -8,14 +8,14 @@ type ColumnConfig<T> = {
   cell?: (props: any) => React.ReactNode
 }
 
-type ExpandField<T> = {
+type ExpandField = {
   label: string
-  accessor: keyof T
+  accessor: string
 }
 
 type BuildOptions<T> = {
   actions?: ColumnDef<T>
-  expandFields?: ExpandField<T>[]
+  expandFields?: ExpandField[]
 }
 
 export function buildColumns<T>(

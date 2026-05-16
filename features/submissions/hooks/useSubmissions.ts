@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-	getAllSubmissions,
 	getSubmissions,
 	createSubmission,
 	updateSubmission,
@@ -8,39 +7,30 @@ import {
 } from '../services/submissions.service';
 
 const QUERY_KEY = ['submissions'];
-const ALL_QUERY_KEY = ['submissions-all'];
 
-export function useSubmissions(all = false) {
+export function useSubmissions() {
 	const queryClient = useQueryClient();
+
 	const query = useQuery({
-		queryKey: all ? ALL_QUERY_KEY : QUERY_KEY,
-		queryFn: all ? getAllSubmissions : getSubmissions,
+		queryKey: QUERY_KEY,
+		queryFn: getSubmissions,
 		staleTime: 1000 * 60 * 2,
 	});
 
-	const invalidate = () =>
-		queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-
 	const create = useMutation({
 		mutationFn: createSubmission,
-		onSuccess: invalidate,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
 
 	const update = useMutation({
 		mutationFn: updateSubmission,
-		onSuccess: invalidate,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
 
 	const remove = useMutation({
 		mutationFn: deleteSubmission,
-		onSuccess: invalidate,
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
 
-	return {
-		...query,
-
-		create,
-		update,
-		remove,
-	};
+	return { ...query, create, update, remove };
 }
