@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { Pagination } from "./components/pagiantion"
+import { Pagination } from "./components/pagination"
 import { Header } from "./components/header"
 import { Search } from "./components/search"
 import { ColumnFilter } from "./components/filter"
@@ -30,14 +30,12 @@ interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   renderExpanded?: (row: TData) => React.ReactNode
-  canExpand?: (row: TData) => boolean
 }
 
 export function DataTable<TData>({
   columns,
   data,
   renderExpanded,
-  canExpand,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState("")
@@ -51,14 +49,11 @@ export function DataTable<TData>({
     enableSorting: false,
     enableHiding: false,
     size: 40,
-    cell: ({ row }) => {
-      if (canExpand && !canExpand(row.original)) return null
-      return (
-        <button onClick={() => row.toggleExpanded()}>
-          {row.getIsExpanded() ? "▼" : "▶"}
-        </button>
-      )
-    },
+    cell: ({ row }) => (
+      <button onClick={() => row.toggleExpanded()}>
+        {row.getIsExpanded() ? "▼" : "▶"}
+      </button>
+    ),
   }
 
   const allColumns = renderExpanded ? [expandColumn, ...columns] : columns
