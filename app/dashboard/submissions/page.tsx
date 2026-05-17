@@ -25,7 +25,7 @@ export default function SubmissionsPage() {
   const { open: revOpen, editing: revEditing, submissionId, topic, reset: revReset } = useReviewsStore()
 
   const { data: user } = useMe()
-  const { data: submissions } = useSubmissions()
+  const { data: submissions, isLoading, error } = useSubmissions()
   const { data: allAssignments } = useAssignments()
 
   const { handleSubmit: handleSubmissionSubmit } = useSubmissionsCrud()
@@ -81,6 +81,8 @@ export default function SubmissionsPage() {
         columns={columns}
         data={submissions ?? []}
         renderExpanded={renderExpandedSubmission}
+        isLoading={isLoading}
+        error={error}
       />
 
       {user?.role === 'STUDENT' && (

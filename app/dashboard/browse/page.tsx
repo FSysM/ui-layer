@@ -7,7 +7,7 @@ import { useAllSubmissions } from '@/features/submissions/hooks/useSubmissions'
 import PageHeader from '@/components/layout/PageHeader'
 
 export default function BrowsePage() {
-  const { data: submissions } = useAllSubmissions()
+  const { data: submissions, isLoading, error } = useAllSubmissions()
   const columns = useMemo(() => buildSubmissionsColumns([]), [])
 
   return (
@@ -17,6 +17,8 @@ export default function BrowsePage() {
         columns={columns}
         data={submissions ?? []}
         renderExpanded={renderExpandedSubmission}
+        isLoading={isLoading}
+        error={error}
       />
     </div>
   )

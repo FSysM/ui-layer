@@ -16,7 +16,7 @@ import { useMe } from '@/features/auth/hooks/useMe'
 export default function AssignmentsPage() {
   const { open, editing, openCreate, reset } = useAssignmentsStore()
   const { data: user } = useMe()
-  const { data: assignments } = useAssignments()
+  const { data: assignments, isLoading, error } = useAssignments()
 
   const { handleSubmit } = useAssignmentsCrud()
   const actions = useAssignmentsTableActions()
@@ -31,13 +31,13 @@ export default function AssignmentsPage() {
         )}
       />
 
-      {assignments && (
-        <DataTable
-          columns={columns}
-          data={assignments}
-          renderExpanded={renderExpandedAssignment}
-        />
-      )}
+      <DataTable
+        columns={columns}
+        data={assignments ?? []}
+        renderExpanded={renderExpandedAssignment}
+        isLoading={isLoading}
+        error={error}
+      />
 
       {user?.role === 'TEACHER' && (
         <FormModal

@@ -19,23 +19,29 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table"
+import { AlertCircle } from "lucide-react"
 
 import { Pagination } from "./components/pagination"
 import { Header } from "./components/header"
 import { Search } from "./components/search"
 import { ColumnFilter } from "./components/filter"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
   renderExpanded?: (row: TData) => React.ReactNode
+  isLoading?: boolean
+  error?: Error | null
 }
 
 export function DataTable<TData>({
   columns,
   data,
   renderExpanded,
+  isLoading,
+  error,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState("")
@@ -75,6 +81,80 @@ export function DataTable<TData>({
     globalFilterFn: "includesString",
   })
 
+  const colSpan = allColumns.length
+
+  function renderBody() {
+    if (isLoading) {
+      return Array.from({ length: 3 }).map((_, i) => (
+        <TableRow key={i}>
+          {allColumns.map((_, j) => (
+            <TableCell key={j} className="py-3">
+              <Skeleton className="h-4 w-full" />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))
+    }
+
+    if (error) {
+      return (
+        <TableRow>
+          <TableCell colSpan={colSpan} className="h-36">
+            <div className="flex flex-col items-center justify-center gap-2 text-destructive">
+              <AlertCircle className="h-6 w-6" />
+              <p className="text-sm font-medium">Something went wrong</p>
+              <p className="text-xs text-muted-foreground">{error.message}</p>
+            </div>
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    if (table.getRowModel().rows.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={colSpan} className="h-32 text-center text-sm text-muted-foreground">
+            No data found
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return table.getRowModel().rows.map((row) => (
+      <React.Fragment key={row.id}>
+        <TableRow data-state={row.getIsSelected() && "selected"}>
+          {row.getVisibleCells().map((cell) => (
+            <TableCell
+              key={cell.id}
+              className={cn(
+                cell.column.id === "expand" && "w-10 p-1 text-center",
+                cell.column.id === "actions" && "w-14 p-1 text-right",
+                cell.column.id !== "expand" && cell.column.id !== "actions" && "truncate",
+              )}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+
+        {row.getIsExpanded() && renderExpanded && (
+          <TableRow>
+            <TableCell
+              colSpan={row.getVisibleCells().length}
+              className="p-0 border-0 truncate"
+            >
+              <div className="overflow-hidden bg-muted/40 px-4 transition-all duration-300 ease-in-out animate-in fade-in slide-in-from-top-2">
+                <div className="py-4">
+                  {renderExpanded(row.original)}
+                </div>
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
+      </React.Fragment>
+    ))
+  }
+
   return (
     <div className="min-w-0">
       <div className="flex items-center py-4">
@@ -85,39 +165,7 @@ export function DataTable<TData>({
         <Table className="table-fixed w-full">
           <Header table={table} />
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <React.Fragment key={row.id}>
-                <TableRow data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.id === "expand" && "w-10 p-1 text-center",
-                        cell.column.id === "actions" && "w-14 p-1 text-right",
-                        cell.column.id !== "expand" && cell.column.id !== "actions" && "truncate",
-                      )}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-
-                {row.getIsExpanded() && renderExpanded && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={row.getVisibleCells().length}
-                      className="p-0 border-0 truncate"
-                    >
-                      <div className="overflow-hidden bg-muted/40 px-4 transition-all duration-300 ease-in-out animate-in fade-in slide-in-from-top-2">
-                        <div className="py-4">
-                          {renderExpanded(row.original)}
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </React.Fragment>
-            ))}
+            {renderBody()}
           </TableBody>
         </Table>
       </div>
