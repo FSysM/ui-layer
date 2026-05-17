@@ -2,19 +2,22 @@
 
 import { buildColumns } from "@/components/table/build-columns"
 import type { ActionConfig } from "@/components/table/types"
+import { buildExpandRenderer, type ExpandConfig } from "@/components/table/components/expand"
 import { Assignments } from "./types/assignments.types"
-import { Expand } from "@/components/table/components/expand"
 import { CheckCircle, XCircle } from "lucide-react"
 
-const expandFields = [
-  { label: "Annotation", accessor: "annotation" },
-  { label: "Faculty", accessor: "faculty" },
-  { label: "Department", accessor: "department" },
+const expandConfig: ExpandConfig = [
+  {
+    type: 'fields',
+    fields: [
+      { label: 'Annotation', accessor: 'annotation' },
+      { label: 'Faculty', accessor: 'faculty' },
+      { label: 'Department', accessor: 'department' },
+    ],
+  },
 ]
 
-export const renderExpandedAssignment = (row: Assignments) => (
-  <Expand row={row} config={expandFields} />
-)
+export const renderExpandedAssignment = buildExpandRenderer<Assignments>(expandConfig)
 
 export function buildAssignmentColumns(actions: ActionConfig<Assignments>[]) {
   return buildColumns<Assignments>(
