@@ -1,19 +1,19 @@
+import { Controller } from 'react-hook-form'
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import type { FieldConfig, FieldProps } from '../types/form.types'
 
-import { Label } from "@/components/ui/label"
+type SelectConfig = Extract<FieldConfig, { type: 'select' }>
 
-export function SelectField({
-  field,
-  control,
-  Controller,
-  errors,
-}: any) {
+export function SelectField({ field, control, errors }: FieldProps) {
+  const { options, onSelect } = field as SelectConfig
+
   return (
     <div className="space-y-2">
       <Label>{field.label}</Label>
@@ -21,20 +21,19 @@ export function SelectField({
       <Controller
         name={field.name}
         control={control}
-        render={({ field: rhf }: any) => (
+        render={({ field: rhf }) => (
           <Select
             onValueChange={(val) => {
               rhf.onChange(val)
-              field.onSelect?.(val)
+              onSelect?.(val)
             }}
-            value={rhf.value ?? ""}
+            value={rhf.value ?? ''}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
-
             <SelectContent>
-              {field.options.map((o: any) => (
+              {options.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
                   {o.label}
                 </SelectItem>
@@ -45,9 +44,7 @@ export function SelectField({
       />
 
       {errors[field.name] && (
-        <p className="text-sm text-red-500">
-          {errors[field.name]?.message}
-        </p>
+        <p className="text-sm text-red-500">{errors[field.name]?.message as string}</p>
       )}
     </div>
   )

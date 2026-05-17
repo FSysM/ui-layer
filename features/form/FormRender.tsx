@@ -1,16 +1,13 @@
-import { fieldRegistry } from "./fields"
+import { fieldRegistry } from './fields/fieldRegistry'
+import type { FieldConfig, FieldProps } from './types/form.types'
 
-export function FormRender({
-  fields,
-  register,
-  control,
-  Controller,
-  errors,
-  watch,
-}: any) {
-  return fields.map((field: any) => {
+type FormRenderProps = Omit<FieldProps, 'field'> & {
+  fields: FieldConfig[]
+}
+
+export function FormRender({ fields, register, control, errors, watch }: FormRenderProps) {
+  return fields.map((field) => {
     const Component = fieldRegistry[field.type]
-
     if (!Component) return null
 
     return (
@@ -19,7 +16,6 @@ export function FormRender({
         field={field}
         register={register}
         control={control}
-        Controller={Controller}
         errors={errors}
         watch={watch}
       />
