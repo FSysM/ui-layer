@@ -12,8 +12,8 @@ export const renderExpandedSubmission = (row: Submissions) => (
 export function buildSubmissionsColumns(actions: ActionConfig<Submissions>[]) {
   return buildColumns<Submissions>(
     [
-      { accessorKey: "assignment.topic", header: "Topic" },
-      { accessorKey: "assignment.type", header: "Type" },
+      { accessorKey: "topic", header: "Topic" },
+      { accessorKey: "type", header: "Type" },
       { accessorKey: "assignment.student.name", header: "Student" },
       { accessorKey: "assignment.supervisor.name", header: "Supervisor" },
       { accessorKey: "status", header: "Status" },
