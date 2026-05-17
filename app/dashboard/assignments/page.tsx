@@ -1,49 +1,25 @@
 'use client'
 
-import { useMemo, useCallback } from 'react'
-
-import { buildAssignmentColumns, renderExpanded } from '@/components/table/config/assignments.columns'
+import { useMemo } from 'react'
 import { DataTable } from '@/components/table/data-table'
-import { createAssignmentActions } from '@/features/assignments/hooks/useAssignmentsActions'
-
-import { useAssignments, useCreateAssignment, useUpdateAssignment, useDeleteAssignment, usePickAssignment, useUnpickAssignment } from '@/features/assignments/hooks/useAssignments'
+import { buildAssignmentColumns, renderExpandedAssignment } from '@/features/assignments/columns.config'
+import { useAssignments } from '@/features/assignments/hooks/useAssignments'
 import { useAssignmentsStore } from '@/features/assignments/store/assignments.store'
-import { assignmentFormConfig } from '@/features/form/config/assignment.config'
-import { FormFactory } from '@/features/form/FormFactory'
+import { assignmentFormConfig } from '@/features/assignments/form.config'
+import { useAssignmentsCrud } from '@/features/assignments/hooks/useAssignmentsCrud'
+import { useAssignmentsTableActions } from '@/features/assignments/hooks/useAssignmentsTableActions'
+import { FormModal } from '@/features/form/FormModal'
 import PageHeader from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
 import { useMe } from '@/features/auth/hooks/useMe'
 
 export default function AssignmentsPage() {
-  const { open, editing, openCreate, openEdit, reset } = useAssignmentsStore()
+  const { open, editing, openCreate, reset } = useAssignmentsStore()
   const { data: user } = useMe()
+  const { data: assignments } = useAssignments()
 
-  const assignmentsQuery = useAssignments()
-  const create = useCreateAssignment()
-  const update = useUpdateAssignment()
-  const deleteAssignment = useDeleteAssignment()
-  const pickAssignment = usePickAssignment()
-  const unpickAssignment = useUnpickAssignment()
-
-  const handleSubmit = useCallback((data: any) => {
-    if (editing) {
-      update.mutate({ id: editing.id, ...data }, { onSuccess: reset })
-    } else {
-      create.mutate(data, { onSuccess: reset })
-    }
-  }, [editing])
-
-  const actions = useMemo(() => {
-    if (!user?.role) return []
-    return createAssignmentActions(
-      user.role,
-      openEdit,
-      deleteAssignment.mutate,
-      pickAssignment.mutate,
-      unpickAssignment.mutate,
-    )
-  }, [user?.role, openEdit, deleteAssignment.mutate, pickAssignment.mutate, unpickAssignment.mutate])
-
+  const { handleSubmit } = useAssignmentsCrud()
+  const actions = useAssignmentsTableActions()
   const columns = useMemo(() => buildAssignmentColumns(actions), [actions])
 
   return (
@@ -55,16 +31,16 @@ export default function AssignmentsPage() {
         )}
       />
 
-      {assignmentsQuery.data && (
+      {assignments && (
         <DataTable
           columns={columns}
-          data={assignmentsQuery.data ?? []}
-          renderExpanded={renderExpanded}
+          data={assignments}
+          renderExpanded={renderExpandedAssignment}
         />
       )}
 
       {user?.role === 'TEACHER' && (
-        <FormFactory
+        <FormModal
           open={open}
           onOpenChange={(v) => !v && reset()}
           config={assignmentFormConfig}

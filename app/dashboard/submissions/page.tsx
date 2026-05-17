@@ -1,119 +1,111 @@
 'use client'
 
-import { useMemo, useCallback, useState } from 'react'
-
-import PageHeader from '@/components/layout/PageHeader'
-import { buildSubmissionsColumns, renderExpanded } from '@/components/table/config/submissions.columns'
+import { useMemo, useState } from 'react'
 import { DataTable } from '@/components/table/data-table'
-import { createSubmissionsActions } from '@/features/submissions/hooks/useSubmissionsActions'
-
-import { useSubmissions, useCreateSubmission, useUpdateSubmission, useDeleteSubmission } from '@/features/submissions/hooks/useSubmissions'
+import { buildSubmissionsColumns, renderExpandedSubmission } from '@/features/submissions/columns.config'
+import { useSubmissions } from '@/features/submissions/hooks/useSubmissions'
 import { useSubmissionsStore } from '@/features/submissions/store/submissions.store'
+import { useReviewsStore } from '@/features/reviews/store/reviews.store'
 import { useAssignments } from '@/features/assignments/hooks/useAssignments'
-import { createSubmissionFormConfig, editSubmissionFormConfig } from '@/features/form/config/submission.config'
-import { FormFactory } from '@/features/form/FormFactory'
-import { useMe } from '@/features/auth/hooks/useMe'
+import { useSubmissionsCrud } from '@/features/submissions/hooks/useSubmissionsCrud'
+import { useReviewsCrud } from '@/features/reviews/hooks/useReviewsCrud'
+import { useSubmissionsTableActions } from '@/features/submissions/hooks/useSubmissionsTableActions'
+import { createSubmissionFormConfig, editSubmissionFormConfig } from '@/features/submissions/form.config'
+import { createReviewFormConfig, editReviewFormConfig } from '@/features/reviews/form.config'
+import { assignmentToForm, submissionToForm } from '@/features/submissions/mappers/submission-form.mapper'
+import { ApproveDialog } from '@/features/submissions/components/ApproveDialog'
+import { FormModal } from '@/features/form/FormModal'
+import PageHeader from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
-
+import { useMe } from '@/features/auth/hooks/useMe'
+import type { Assignments } from '@/features/assignments/types/assignments.types'
 
 export default function SubmissionsPage() {
-  const { open, editing, openCreate, openEdit, reset } = useSubmissionsStore()
+  const { open: subOpen, editing: subEditing, openCreate: subOpenCreate, reset: subReset } = useSubmissionsStore()
+  const { open: revOpen, editing: revEditing, submissionId, topic, reset: revReset } = useReviewsStore()
 
   const { data: user } = useMe()
-  const submissionsQuery = useSubmissions()
-  const assignmentsQuery = useAssignments()
+  const { data: submissions } = useSubmissions()
+  const { data: allAssignments } = useAssignments()
 
-  const create = useCreateSubmission()
-  const update = useUpdateSubmission()
-  const remove = useDeleteSubmission()
-
-  const handleAssignmentSelect = useCallback((id: string, setValue: (name: string, value: any) => void) => {
-    const assignment = assignmentsQuery.data?.find((a) => a.id === id)
-    if (!assignment) return
-
-    setValue('topic', assignment.topic)
-    setValue('type', assignment.type)
-    setValue('faculty', assignment.faculty)
-    setValue('department', assignment.department)
-    setValue('annotation', assignment.annotation)
-  }, [assignmentsQuery.data])
-
-  const handleSubmit = useCallback((data: any) => {
-    if (editing) {
-      update.mutate({ id: editing.id, literature: data.literature, fileUrl: data.fileUrl }, { onSuccess: reset })
-    } else {
-      create.mutate(
-        { assignmentId: data.assignmentId, literature: data.literature, fileUrl: data.fileUrl },
-        { onSuccess: reset },
-      )
-    }
-  }, [editing, create, update, reset])
-  
-    const actions = useMemo(() => {
-      if (!user?.role) return []
-      return createSubmissionsActions(
-        user.role,
-        openEdit,
-        remove.mutate,
-      )
-    }, [user?.role, openEdit, remove.mutate])
-  
+  const { handleSubmit: handleSubmissionSubmit } = useSubmissionsCrud()
+  const { handleSubmit: handleReviewSubmit } = useReviewsCrud()
+  const actions = useSubmissionsTableActions()
   const columns = useMemo(() => buildSubmissionsColumns(actions), [actions])
-  
+
   const [selectedAssignment, setSelectedAssignment] = useState<Assignments | null>(null)
 
-  const createConfig = useMemo(() => {
-    return createSubmissionFormConfig(
-      assignmentsQuery.data ?? [],
-      (id) => {
-        const a = assignmentsQuery.data?.find((a) => a.id === id) ?? null
-        setSelectedAssignment(a)
-      },
+  // Students only see their own picked assignment in the create dropdown
+  const studentAssignments = useMemo(() => {
+    if (user?.role !== 'STUDENT') return allAssignments ?? []
+    return (allAssignments ?? []).filter(
+      (a) => a.taken && a.student?.id === user.id
     )
-  }, [assignmentsQuery.data])
+  }, [allAssignments, user])
 
-  const createValues = useMemo(() => {
-    if (!selectedAssignment) return undefined
-    return {
-      assignmentId: selectedAssignment.id,
-      topic: selectedAssignment.topic,
-      type: selectedAssignment.type,
-      faculty: selectedAssignment.faculty,
-      department: selectedAssignment.department,
-      annotation: selectedAssignment.annotation,
-    }
-  }, [selectedAssignment])
+  const createSubConfig = useMemo(() => createSubmissionFormConfig(
+    studentAssignments,
+    (id) => setSelectedAssignment(studentAssignments.find((a) => a.id === id) ?? null),
+  ), [studentAssignments])
 
-  const editValues = useMemo(() => {
-    if (!editing) return undefined
-    return { literature: editing.literature, fileUrl: editing.fileUrl }
-  }, [editing])
-  
+  const createSubValues = useMemo(() =>
+    selectedAssignment ? assignmentToForm(selectedAssignment) : undefined,
+    [selectedAssignment]
+  )
+
+  const editSubValues = useMemo(() =>
+    subEditing ? submissionToForm(subEditing) : undefined,
+    [subEditing]
+  )
+
+  const createRevConfig = useMemo(
+    () => createReviewFormConfig(submissionId ?? '', topic ?? ''),
+    [submissionId, topic],
+  )
+
+  const editRevValues = useMemo(() => {
+    if (!revEditing) return undefined
+    return { grade: revEditing.grade, comment: revEditing.comment ?? '' }
+  }, [revEditing])
 
   return (
     <div>
       <PageHeader
         title="Submissions"
         actions={user?.role === 'STUDENT' && (
-          <Button onClick={openCreate}>Create Submission</Button>
+          <Button onClick={subOpenCreate}>Create Submission</Button>
         )}
       />
 
       <DataTable
         columns={columns}
-        data={submissionsQuery.data ?? []}
-        renderExpanded={renderExpanded}
+        data={submissions ?? []}
+        renderExpanded={renderExpandedSubmission}
       />
 
       {user?.role === 'STUDENT' && (
-        <FormFactory
-          open={open}
-          onOpenChange={(v) => { if (!v) { reset(); setSelectedAssignment(null) } }}
-          config={editing ? editSubmissionFormConfig : createConfig}
-          values={editing ? editValues : createValues}
-          onSubmit={handleSubmit}
-          submitLabel={editing ? 'Save changes' : 'Create Submission'}
+        <FormModal
+          open={subOpen}
+          onOpenChange={(v) => { if (!v) { subReset(); setSelectedAssignment(null) } }}
+          config={subEditing ? editSubmissionFormConfig : createSubConfig}
+          values={subEditing ? editSubValues : createSubValues}
+          onSubmit={handleSubmissionSubmit}
+          submitLabel={subEditing ? 'Save changes' : 'Create Submission'}
         />
+      )}
+
+      {user?.role === 'TEACHER' && (
+        <>
+          <FormModal
+            open={revOpen}
+            onOpenChange={(v) => !v && revReset()}
+            config={revEditing ? editReviewFormConfig : createRevConfig}
+            values={revEditing ? editRevValues : undefined}
+            onSubmit={handleReviewSubmit}
+            submitLabel={revEditing ? 'Save changes' : 'Create Review'}
+          />
+          <ApproveDialog />
+        </>
       )}
     </div>
   )

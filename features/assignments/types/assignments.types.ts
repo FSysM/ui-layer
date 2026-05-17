@@ -1,20 +1,12 @@
 export type Assignments = {
-	id: string;
-	faculty: string;
-	department: string;
-	annotation: string;
-	literature: string;
-	assignmentDate: string;
-	topic: string;
-	type: string;
-	taken: boolean;
-	student: {
-		id: string;
-		name: string | null;
-	};
-
-	supervisor: {
-		id: string;
-		name: string;
-	};
+  id: string;
+  topic: string;
+  type: string;
+  faculty: string;
+  department: string;
+  annotation: string | null;
+  assignmentDate: string;
+  taken: boolean;
+  student: { id: string; name: string | null } | null;
+  supervisor: { id: string; name: string };
 };

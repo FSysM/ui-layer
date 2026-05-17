@@ -7,11 +7,12 @@ import {
 	pickAssignment,
 	unpickAssignment,
 } from '../services/assignments.service';
+import type { Assignments } from '../types/assignments.types';
 
 const QUERY_KEY = ['assignments'];
 
 export const useAssignments = () => {
-	return useQuery({
+	return useQuery<Assignments[]>({
 		queryKey: QUERY_KEY,
 		queryFn: getAssignments,
 	});

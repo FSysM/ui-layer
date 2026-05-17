@@ -1,19 +1,47 @@
-import { useQuery } from '@tanstack/react-query';
-import { getReviews } from '../services/reviews.service';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+	getReviews,
+	createReview,
+	updateReview,
+	deleteReview,
+} from '../services/reviews.service';
+
+const QUERY_KEY = ['reviews'];
+const SUBMISSIONS_KEY = ['submissions'];
 
 export function useReviews() {
-	return useQuery({
-		queryKey: ['reviews'],
-		queryFn: getReviews,
-		staleTime: 1000 * 60 * 2, // 2 min cache
+	return useQuery({ queryKey: QUERY_KEY, queryFn: getReviews });
+}
+
+export function useCreateReview() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: createReview,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			queryClient.invalidateQueries({ queryKey: SUBMISSIONS_KEY });
+		},
 	});
 }
 
-export function useReview(id: string) {
-	return useQuery({
-		queryKey: ['reviews', id],
-		queryFn: () =>
-			getReviews().then((reviews) => reviews.find((r) => r.id === id)),
-		staleTime: 1000 * 60 * 2, // 2 min cache
+export function useUpdateReview() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: updateReview,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			queryClient.invalidateQueries({ queryKey: SUBMISSIONS_KEY });
+		},
+	});
+}
+
+export function useDeleteReview() {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: deleteReview,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			queryClient.invalidateQueries({ queryKey: SUBMISSIONS_KEY });
+		},
 	});
 }

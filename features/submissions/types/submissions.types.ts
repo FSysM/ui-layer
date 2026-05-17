@@ -1,41 +1,41 @@
+import type { SubmissionReview } from '@/features/reviews/types/reviews.types';
+
 export type Submissions = {
-	assignment: {
-		topic: string;
-		type: string;
-		annotation: string;
-		student: {
-			id: string;
-			name: string | null;
-		};
+  id: string;
 
-		supervisor: {
-			id: string;
-			name: string;
-		};
-	};
-	opponent: {
-		id: string;
-		name: string;
-	};
-	faculty: string;
-	department: string;
+  // Student-editable copy of assignment data
+  topic: string;
+  type: string;
+  faculty: string;
+  department: string;
+  annotation: string | null;
 
-	literature: string;
-	assignmentDate: string;
-	status: string;
+  // Submission-specific fields
+  status: string;
+  literature: string | null;
+  fileUrl: string | null;
+  submissionDate: string;
+
+  // Relations (reference only)
+  assignment: {
+    id: string;
+    assignmentDate: string;
+    student: { id: string; name: string | null } | null;
+    supervisor: { id: string; name: string };
+  };
+
+  opponent: { id: string; name: string | null } | null;
+
+  reviews: SubmissionReview[];
 };
 
 export type SubmissionFormModel = {
-	assignmentId: string;
-
-	// Read-only fields (from assignment)
-	topic: string;
-	type: string;
-	faculty: string;
-	department: string;
-	annotation: string;
-
-	// Editable fields
-	literature: string;
-	fileUrl: string;
+  assignmentId: string;
+  topic: string;
+  type: string;
+  faculty: string;
+  department: string;
+  annotation: string;
+  literature: string;
+  fileUrl: string;
 };
