@@ -1,91 +1,78 @@
 'use client'
 
-import { useMemo, useState } from "react"
-import {
-  buildAssignmentColumns,
-  renderExpanded
-} from "@/components/table/config/assignments.columns"
+import { useMemo, useCallback } from 'react'
 
-import { DataTable } from "@/components/table/data-table"
-import { useAssignments } from "@/features/assignments/hooks/useAssignments"
-import { createAssignmentActions } from "@/features/assignments/hooks/useAssignmentsActions"
-import { AssignmentsForm } from "@/components/form/assignments/assignemts.form"
-import PageHeader from "@/components/layout/PageHeader"
-import { useMe } from "@/features/auth/hooks/useMe"
-import { Assignments } from "@/features/assignments/types/assignments.types"
-import { AssignmentFormData } from "@/features/assignments/schemas/assignments.schema"
+import { buildAssignmentColumns, renderExpanded } from '@/components/table/config/assignments.columns'
+import { DataTable } from '@/components/table/data-table'
+import { createAssignmentActions } from '@/features/assignments/hooks/useAssignmentsActions'
+
+import { useAssignments, useCreateAssignment, useUpdateAssignment, useDeleteAssignment, usePickAssignment, useUnpickAssignment } from '@/features/assignments/hooks/useAssignments'
+import { useAssignmentsStore } from '@/features/assignments/store/assignments.store'
+import { assignmentFormConfig } from '@/features/form/config/assignment.config'
+import { FormFactory } from '@/features/form/FormFactory'
+import PageHeader from '@/components/layout/PageHeader'
+import { Button } from '@/components/ui/button'
+import { useMe } from '@/features/auth/hooks/useMe'
 
 export default function AssignmentsPage() {
-  const [open, setOpen] = useState(false)
-  const [editing, setEditing] = useState<Assignments | null>(null)
-
+  const { open, editing, openCreate, openEdit, reset } = useAssignmentsStore()
   const { data: user } = useMe()
 
   const assignmentsQuery = useAssignments()
+  const create = useCreateAssignment()
+  const update = useUpdateAssignment()
+  const deleteAssignment = useDeleteAssignment()
+  const pickAssignment = usePickAssignment()
+  const unpickAssignment = useUnpickAssignment()
 
-  const { create, update, remove, pick, unpick } = useAssignments()
+  const handleSubmit = useCallback((data: any) => {
+    if (editing) {
+      update.mutate({ id: editing.id, ...data }, { onSuccess: reset })
+    } else {
+      create.mutate(data, { onSuccess: reset })
+    }
+  }, [editing])
 
   const actions = useMemo(() => {
     if (!user?.role) return []
-
     return createAssignmentActions(
       user.role,
-      setEditing,
-      setOpen,
-      remove.mutate,
-      pick.mutate,
-      unpick.mutate
+      openEdit,
+      deleteAssignment.mutate,
+      pickAssignment.mutate,
+      unpickAssignment.mutate,
     )
-  }, [user?.role, remove.mutate, pick.mutate, unpick.mutate])
+  }, [user?.role, openEdit, deleteAssignment.mutate, pickAssignment.mutate, unpickAssignment.mutate])
 
-  const columns = useMemo(
-    () => buildAssignmentColumns(actions),
-    [actions]
-  )
-
-  function handleSubmit(data: AssignmentFormData) {
-    if (editing) {
-      update.mutate(
-        { ...data, id: editing.id },
-        {
-          onSuccess: () => {
-            setEditing(null)
-            setOpen(false)
-          },
-        }
-      )
-    } else {
-      create.mutate(data, {
-        onSuccess: () => setOpen(false),
-      })
-    }
-  }
+  const columns = useMemo(() => buildAssignmentColumns(actions), [actions])
 
   return (
     <div>
       <PageHeader
         title="Assignments"
-        actions={
-          user?.role === 'TEACHER' && (
-            <AssignmentsForm
-              open={open}
-              onOpenChange={(v) => {
-                setOpen(v)
-                if (!v) setEditing(null)
-              }}
-              onSubmit={handleSubmit}
-              mode={editing ? 'edit' : 'create'}
-              defaultValues={editing ?? undefined}
-            />
-          )
-        }
+        actions={user?.role === 'TEACHER' && (
+          <Button onClick={openCreate}>Create Assignment</Button>
+        )}
       />
 
-      <DataTable
-        columns={columns}
-        data={assignmentsQuery.data ?? []}
-        renderExpanded={renderExpanded}
-      />
+      {assignmentsQuery.data && (
+        <DataTable
+          columns={columns}
+          data={assignmentsQuery.data ?? []}
+          renderExpanded={renderExpanded}
+        />
+      )}
+
+      {user?.role === 'TEACHER' && (
+        <FormFactory
+          open={open}
+          onOpenChange={(v) => !v && reset()}
+          config={assignmentFormConfig}
+          values={editing ?? undefined}
+          onSubmit={handleSubmit}
+          submitLabel={editing ? 'Save changes' : 'Create Assignment'}
+        />
+      )}
     </div>
   )
 }

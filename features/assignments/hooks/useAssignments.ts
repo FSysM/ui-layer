@@ -10,50 +10,64 @@ import {
 
 const QUERY_KEY = ['assignments'];
 
-export function useAssignments() {
-	const queryClient = useQueryClient();
-
-	const query = useQuery({
+export const useAssignments = () => {
+	return useQuery({
 		queryKey: QUERY_KEY,
 		queryFn: getAssignments,
-		staleTime: 1000 * 60 * 2,
 	});
+};
 
-	const invalidate = () =>
-		queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+export const useCreateAssignment = () => {
+	const queryClient = useQueryClient();
 
-	const create = useMutation({
+	return useMutation({
 		mutationFn: createAssignment,
-		onSuccess: invalidate,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+		},
 	});
+};
 
-	const update = useMutation({
+export const useUpdateAssignment = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: updateAssignment,
-		onSuccess: invalidate,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+		},
 	});
+};
 
-	const remove = useMutation({
+export const useDeleteAssignment = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: deleteAssignment,
-		onSuccess: invalidate,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+		},
 	});
+};
 
-	const pick = useMutation({
+export const usePickAssignment = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: pickAssignment,
-		onSuccess: invalidate,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+		},
 	});
+};
 
-	const unpick = useMutation({
+export const useUnpickAssignment = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: unpickAssignment,
-		onSuccess: invalidate,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+		},
 	});
-
-	return {
-		...query,
-
-		create,
-		update,
-		remove,
-		pick,
-		unpick,
-	};
-}
+};

@@ -9,28 +9,35 @@ import {
 const QUERY_KEY = ['submissions'];
 
 export function useSubmissions() {
-	const queryClient = useQueryClient();
-
-	const query = useQuery({
+	return useQuery({
 		queryKey: QUERY_KEY,
 		queryFn: getSubmissions,
-		staleTime: 1000 * 60 * 2,
 	});
+}
 
-	const create = useMutation({
+export function useCreateSubmission() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: createSubmission,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
+}
 
-	const update = useMutation({
+export function useUpdateSubmission() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: updateSubmission,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
+}
 
-	const remove = useMutation({
+export function useDeleteSubmission() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
 		mutationFn: deleteSubmission,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
 	});
-
-	return { ...query, create, update, remove };
 }
