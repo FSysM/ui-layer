@@ -1,8 +1,8 @@
 "use client"
 
-import { Table } from "@tanstack/react-table"
+import { Table, flexRender } from "@tanstack/react-table"
 import { TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { flexRender } from "@tanstack/react-table"
+import { cn } from "@/lib/utils"
 
 interface HeaderProps<TData> {
   table: Table<TData>
@@ -14,7 +14,14 @@ export function Header<TData>({ table }: HeaderProps<TData>) {
       {table.getHeaderGroups().map((headerGroup) => (
         <TableRow key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
-            <TableHead key={header.id} className="truncate overflow-hidden">
+            <TableHead
+              key={header.id}
+              className={cn(
+                header.column.id === "expand" && "w-10 p-0",
+                header.column.id === "actions" && "w-14 p-0",
+                header.column.id !== "expand" && header.column.id !== "actions" && "truncate overflow-hidden",
+              )}
+            >
               {header.isPlaceholder
                 ? null
                 : flexRender(header.column.columnDef.header, header.getContext())}

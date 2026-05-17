@@ -1,5 +1,7 @@
 import * as React from "react"
 import { ColumnDef } from "@tanstack/react-table"
+import { Actions } from "./components/actions"
+import type { ActionConfig } from "./types"
 
 type ColumnConfig<T> = {
   accessorKey: keyof T | string
@@ -8,64 +10,34 @@ type ColumnConfig<T> = {
   cell?: (props: any) => React.ReactNode
 }
 
-type ExpandField = {
-  label: string
-  accessor: string
-}
-
-type BuildOptions<T> = {
-  actions?: ColumnDef<T>
-  expandFields?: ExpandField[]
-}
-
 export function buildColumns<T>(
   configs: ColumnConfig<T>[],
-  options?: BuildOptions<T>
+  actions?: ActionConfig<T>[]
 ): ColumnDef<T>[] {
+  const columns: ColumnDef<T>[] = configs.map((col) => ({
+    id: String(col.accessorKey),
+    accessorKey: col.accessorKey as string,
+    enableSorting: col.sortable ?? true,
+    meta: { header: col.header },
+    header: ({ column }) =>
+      column.getCanSort() ? (
+        <button
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {col.header}
+        </button>
+      ) : (
+        col.header
+      ),
+    ...(col.cell ? { cell: col.cell } : {}),
+  }))
 
-  const columns: ColumnDef<T>[] = []
-
-  // 1. EXPAND COLUMN (AUTO)
-  if (options?.expandFields?.length) {
+  if (actions?.length) {
     columns.push({
-      id: "expand",
-      header: () => null,
+      id: "actions",
       enableSorting: false,
       enableHiding: false,
-      cell: ({ row }) => (
-        <button onClick={() => row.toggleExpanded()}>
-          {row.getIsExpanded() ? "▼" : "▶"}
-        </button>
-      ),
-    })
-  }
-
-  // 2. NORMAL COLUMNS
-  configs.forEach((col) => {
-    columns.push({
-      id: String(col.accessorKey),
-      accessorKey: col.accessorKey as string,
-      enableSorting: col.sortable ?? true,
-      meta: { header: col.header },
-      header: ({ column }) =>
-        column.getCanSort() ? (
-          <button onClick={() =>
-            column.toggleSorting(column.getIsSorted() === "asc")
-          }>
-            {col.header}
-          </button>
-        ) : (
-          col.header
-        ),
-      ...(col.cell ? { cell: col.cell } : {}),
-    })
-  })
-
-  // 3. ACTIONS
-  if (options?.actions) {
-    columns.push({
-      ...(options.actions as ColumnDef<T>),
-      enableHiding: false,
+      cell: ({ row }) => <Actions row={row.original} actions={actions} />,
     })
   }
 

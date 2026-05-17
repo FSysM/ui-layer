@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-
 import {
   ColumnDef,
   SortingState,
@@ -12,7 +11,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  getExpandedRowModel 
+  getExpandedRowModel,
 } from "@tanstack/react-table"
 import {
   Table,
@@ -25,46 +24,54 @@ import { Pagination } from "./components/pagiantion"
 import { Header } from "./components/header"
 import { Search } from "./components/search"
 import { ColumnFilter } from "./components/filter"
+import { cn } from "@/lib/utils"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData, unknown>[]
   data: TData[]
-  
   renderExpanded?: (row: TData) => React.ReactNode
+  canExpand?: (row: TData) => boolean
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
   columns,
   data,
-  renderExpanded
-}: DataTableProps<TData, TValue>) {
-  
+  renderExpanded,
+  canExpand,
+}: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState("")
-  const [pagination, setPagination] = React.useState({
-  pageIndex: 0,
-  pageSize: 5,
-  })
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 5 })
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [expanded, setExpanded] = React.useState({})
+
+  const expandColumn: ColumnDef<TData, unknown> = {
+    id: "expand",
+    header: () => null,
+    enableSorting: false,
+    enableHiding: false,
+    size: 40,
+    cell: ({ row }) => {
+      if (canExpand && !canExpand(row.original)) return null
+      return (
+        <button onClick={() => row.toggleExpanded()}>
+          {row.getIsExpanded() ? "▼" : "▶"}
+        </button>
+      )
+    },
+  }
+
+  const allColumns = renderExpanded ? [expandColumn, ...columns] : columns
 
   const table = useReactTable({
     data,
-    columns,
-    state: {
-      sorting,
-      globalFilter,
-      columnVisibility,
-      pagination,
-      expanded,
-    },
+    columns: allColumns,
+    state: { sorting, globalFilter, columnVisibility, pagination, expanded },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
-
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -75,48 +82,38 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="min-w-0">
-      {/* Search and filter controls */ }
       <div className="flex items-center py-4">
-        {/* Search */}
         <Search table={table} />
-        {/* Filter columns */}
         <ColumnFilter table={table} />
       </div>
-      {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table className="table-fixed w-full">
-          {/* Table header */ }
           <Header table={table} />
-          {/* Table body */ }
           <TableBody>
             {table.getRowModel().rows.map((row) => (
               <React.Fragment key={row.id}>
-                
-                {/* MAIN ROW */}
                 <TableRow data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="truncate">
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        cell.column.id === "expand" && "w-10 p-1 text-center",
+                        cell.column.id === "actions" && "w-14 p-1 text-right",
+                        cell.column.id !== "expand" && cell.column.id !== "actions" && "truncate",
+                      )}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
 
-                {/* EXPANDED ROW */}
                 {row.getIsExpanded() && renderExpanded && (
                   <TableRow>
                     <TableCell
                       colSpan={row.getVisibleCells().length}
                       className="p-0 border-0 truncate"
                     >
-                      <div
-                        className="
-                          overflow-hidden
-                          bg-muted/40
-                          px-4
-                          transition-all duration-300 ease-in-out
-                          animate-in fade-in slide-in-from-top-2
-                        "
-                      >
+                      <div className="overflow-hidden bg-muted/40 px-4 transition-all duration-300 ease-in-out animate-in fade-in slide-in-from-top-2">
                         <div className="py-4">
                           {renderExpanded(row.original)}
                         </div>
@@ -129,9 +126,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
-      { /* Pagination controls */ }
       <Pagination table={table} />
-  </div>
+    </div>
   )
 }

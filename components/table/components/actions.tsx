@@ -9,18 +9,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
-
-type Action<T> = {
-  label: string
-  onClick: (row: T) => void
-}
+import type { ActionConfig } from "../types"
 
 interface ActionsProps<T> {
   row: T
-  actions: Action<T>[]
+  actions: ActionConfig<T>[]
 }
 
 export function Actions<T>({ row, actions }: ActionsProps<T>) {
+  const visible = actions.filter((a) => !a.visible || a.visible(row))
+  if (!visible.length) return null
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,11 +31,8 @@ export function Actions<T>({ row, actions }: ActionsProps<T>) {
       <DropdownMenuContent align="end">
         <span className="px-1 py-1.5 text-sm font-medium">Actions</span>
         <DropdownMenuSeparator />
-        {actions.map((action) => (
-          <DropdownMenuItem
-            key={action.label}
-            onClick={() => action.onClick(row)}
-          >
+        {visible.map((action) => (
+          <DropdownMenuItem key={action.label} onClick={() => action.onClick(row)}>
             {action.label}
           </DropdownMenuItem>
         ))}
