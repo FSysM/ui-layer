@@ -19,12 +19,17 @@ export function Header<TData>({ table }: HeaderProps<TData>) {
               className={cn(
                 header.column.id === "expand" && "w-10 p-0",
                 header.column.id === "actions" && "w-14 p-0",
-                header.column.id !== "expand" && header.column.id !== "actions" && "truncate overflow-hidden",
               )}
             >
-              {header.isPlaceholder
-                ? null
-                : flexRender(header.column.columnDef.header, header.getContext())}
+              {header.isPlaceholder ? null : (
+                header.column.id !== "expand" && header.column.id !== "actions" ? (
+                  <div className="truncate">
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </div>
+                ) : (
+                  flexRender(header.column.columnDef.header, header.getContext())
+                )
+              )}
             </TableHead>
           ))}
         </TableRow>

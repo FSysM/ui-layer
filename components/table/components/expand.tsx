@@ -19,11 +19,11 @@ function getValue(obj: any, path: string): any {
 
 function Field({ label, value }: { label: string; value: any }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="flex flex-col gap-0.5 min-w-0">
+      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground truncate">
         {label}
       </span>
-      <span className="text-sm">{value != null ? String(value) : '—'}</span>
+      <span className="text-sm truncate">{value != null ? String(value) : '—'}</span>
     </div>
   )
 }

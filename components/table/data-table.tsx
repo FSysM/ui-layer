@@ -129,10 +129,15 @@ export function DataTable<TData>({
               className={cn(
                 cell.column.id === "expand" && "w-10 p-1 text-center",
                 cell.column.id === "actions" && "w-14 p-1 text-right",
-                cell.column.id !== "expand" && cell.column.id !== "actions" && "truncate",
               )}
             >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              {cell.column.id !== "expand" && cell.column.id !== "actions" ? (
+                <div className="truncate">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </div>
+              ) : (
+                flexRender(cell.column.columnDef.cell, cell.getContext())
+              )}
             </TableCell>
           ))}
         </TableRow>
@@ -141,10 +146,10 @@ export function DataTable<TData>({
           <TableRow>
             <TableCell
               colSpan={row.getVisibleCells().length}
-              className="p-0 border-0 truncate"
+              className="p-0 border-0"
             >
               <div className="overflow-hidden bg-muted/40 px-4 transition-all duration-300 ease-in-out animate-in fade-in slide-in-from-top-2">
-                <div className="py-4">
+                <div className="py-4 min-w-0 overflow-hidden">
                   {renderExpanded(row.original)}
                 </div>
               </div>
