@@ -1,8 +1,8 @@
 import { api } from '@/lib/api';
 import { AssignmentFormData } from '../schemas/assignments.schema';
 
-export async function getAssignments() {
-	const res = await api.get('/assignments');
+export async function getAssignments(filter?: string) {
+	const res = await api.get('/assignments', { params: filter ? { filter } : undefined });
 	return res.data;
 }
 

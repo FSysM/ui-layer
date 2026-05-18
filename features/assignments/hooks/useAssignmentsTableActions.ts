@@ -18,9 +18,9 @@ export function useAssignmentsTableActions(): ActionConfig<Assignments>[] {
       { label: 'Delete', onClick: (row) => remove(row.id) },
     ]
     if (user?.role === 'STUDENT') return [
-      { label: 'Pick', onClick: (row) => pick(row.id) },
-      { label: 'Unpick', onClick: (row) => unpick(row.id) },
+      { label: 'Pick', onClick: (row) => pick(row.id), visible: (row) => !row.taken },
+      { label: 'Unpick', onClick: (row) => unpick(row.id), visible: (row) => row.student?.id === user.id },
     ]
     return []
-  }, [user?.role, openEdit, remove, pick, unpick])
+  }, [user?.role, user?.id, openEdit, remove, pick, unpick])
 }

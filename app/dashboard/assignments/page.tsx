@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { DataTable } from '@/components/table/data-table'
 import { buildAssignmentColumns, renderExpandedAssignment } from '@/features/assignments/columns.config'
 import { useAssignments } from '@/features/assignments/hooks/useAssignments'
@@ -16,7 +16,10 @@ import { useMe } from '@/features/auth/hooks/useMe'
 export default function AssignmentsPage() {
   const { open, editing, openCreate, reset } = useAssignmentsStore()
   const { data: user } = useMe()
-  const { data: assignments, isLoading, error } = useAssignments()
+  const [filter, setFilter] = useState<'all' | 'my'>('all')
+
+  const isFiltered = user?.role === 'STUDENT' || user?.role === 'TEACHER'
+  const { data: assignments, isLoading, error } = useAssignments(isFiltered ? filter : undefined)
 
   const { handleSubmit } = useAssignmentsCrud()
   const actions = useAssignmentsTableActions()
@@ -26,9 +29,19 @@ export default function AssignmentsPage() {
     <div>
       <PageHeader
         title="Assignments"
-        actions={user?.role === 'TEACHER' && (
-          <Button onClick={openCreate}>Create Assignment</Button>
-        )}
+        actions={
+          <div className="flex items-center gap-2">
+            {isFiltered && (
+              <div className="flex gap-1">
+                <Button variant={filter === 'all' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('all')}>All</Button>
+                <Button variant={filter === 'my' ? 'default' : 'outline'} size="sm" onClick={() => setFilter('my')}>My</Button>
+              </div>
+            )}
+            {user?.role === 'TEACHER' && (
+              <Button onClick={openCreate}>Create Assignment</Button>
+            )}
+          </div>
+        }
       />
 
       <DataTable
