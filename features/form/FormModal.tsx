@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -17,9 +17,10 @@ interface FormModalProps {
   values?: Record<string, any>
   onSubmit: (data: Record<string, any>) => void
   submitLabel: string
+  children?: ReactNode
 }
 
-export function FormModal({ open, onOpenChange, config, values, onSubmit, submitLabel }: FormModalProps) {
+export function FormModal({ open, onOpenChange, config, values, onSubmit, submitLabel, children }: FormModalProps) {
   const {
     register,
     handleSubmit,
@@ -39,13 +40,16 @@ export function FormModal({ open, onOpenChange, config, values, onSubmit, submit
   return (
     <FormDialog open={open} onOpenChange={onOpenChange} title={config.title}>
       <form onSubmit={handleSubmit(onSubmit)} className="contents">
-        <FormRender
-          fields={config.fields}
-          register={register}
-          control={control}
-          errors={errors}
-          watch={watch}
-        />
+        <div className="flex flex-col gap-4 overflow-y-auto max-h-[60vh] pr-1">
+          <FormRender
+            fields={config.fields}
+            register={register}
+            control={control}
+            errors={errors}
+            watch={watch}
+          />
+          {children}
+        </div>
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline">Cancel</Button>

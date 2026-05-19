@@ -17,7 +17,7 @@ function getValue(obj: any, path: string): any {
   return path.split('.').reduce((acc, key) => acc?.[key], obj)
 }
 
-function Field({ label, value }: { label: string; value: any }) {
+export function Field({ label, value }: { label: string; value: any }) {
   return (
     <div className="flex flex-col gap-0.5 min-w-0">
       <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground truncate">

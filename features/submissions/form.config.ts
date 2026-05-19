@@ -36,7 +36,6 @@ export function createSubmissionFormConfig(
       department: '',
       annotation: '',
       literature: '',
-      fileUrl: '',
     },
     fields: [
       {
@@ -52,7 +51,6 @@ export function createSubmissionFormConfig(
       { type: 'select', name: 'department', label: 'Department', options: departmentOptions },
       { type: 'textarea', name: 'annotation', label: 'Annotation' },
       { type: 'input', name: 'literature', label: 'Literature' },
-      { type: 'input', name: 'fileUrl', label: 'File URL' },
     ],
   }
 }
@@ -67,7 +65,6 @@ export const editSubmissionFormConfig: FormConfig = {
     department: '',
     annotation: '',
     literature: '',
-    fileUrl: '',
   },
   fields: [
     { type: 'input', name: 'topic', label: 'Topic' },
@@ -76,6 +73,5 @@ export const editSubmissionFormConfig: FormConfig = {
     { type: 'select', name: 'department', label: 'Department', options: departmentOptions },
     { type: 'textarea', name: 'annotation', label: 'Annotation' },
     { type: 'input', name: 'literature', label: 'Literature' },
-    { type: 'input', name: 'fileUrl', label: 'File URL' },
   ],
 }

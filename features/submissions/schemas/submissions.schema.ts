@@ -12,7 +12,6 @@ export const submissionsSchema = z.object({
   department: departmentEnum,
   annotation: z.string().optional(),
   literature: z.string().min(1, 'Literature is required'),
-  fileUrl: z.string().min(1, 'File URL is required'),
 });
 
 export const editSubmissionsSchema = z.object({
@@ -22,7 +21,6 @@ export const editSubmissionsSchema = z.object({
   department: departmentEnum,
   annotation: z.string().optional(),
   literature: z.string().min(1, 'Literature is required'),
-  fileUrl: z.string().min(1, 'File URL is required'),
 });
 
 export type SubmissionsFormData = z.infer<typeof submissionsSchema>;
