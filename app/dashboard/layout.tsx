@@ -1,11 +1,11 @@
-"use client"
-
+'use client'
 import { ReactNode } from "react";
 
 import Header from "@/components/layout/Header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Sidepanel } from "@/components/layout/Sidepanel";
 import PageHeader from "@/components/layout/PageHeader";
+import { GlobalConfirmDialog } from "@/components/confirm-dialog/GlobalConfirmDialog";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -13,6 +13,7 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
+    <>
       <SidebarProvider>
         <Sidepanel />
         <SidebarInset>
@@ -30,5 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </main>
         </SidebarInset>
       </SidebarProvider>
+      <GlobalConfirmDialog />
+      </>
   );
 }

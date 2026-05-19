@@ -13,7 +13,7 @@ import { useSubmissionsTableActions } from '@/features/submissions/hooks/useSubm
 import { createSubmissionFormConfig, editSubmissionFormConfig } from '@/features/submissions/form.config'
 import { createReviewFormConfig, editReviewFormConfig } from '@/features/reviews/form.config'
 import { assignmentToForm, submissionToForm } from '@/features/submissions/mappers/submission-form.mapper'
-import { ApproveDialog } from '@/features/submissions/components/ApproveDialog'
+import { ApproveSubmissionDialog } from '@/features/submissions/components/ApproveSubmissionDialog'
 import { FormModal } from '@/features/form/FormModal'
 import PageHeader from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -106,7 +106,7 @@ export default function SubmissionsPage() {
             onSubmit={handleReviewSubmit}
             submitLabel={revEditing ? 'Save changes' : 'Create Review'}
           />
-          <ApproveDialog />
+          <ApproveSubmissionDialog />
         </>
       )}
     </div>

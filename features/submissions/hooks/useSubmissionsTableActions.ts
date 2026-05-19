@@ -5,6 +5,7 @@ import { useApproveStore } from '../store/approve.store'
 import { useReviewsStore } from '@/features/reviews/store/reviews.store'
 import { useDeleteSubmission, useRejectSubmission } from './useSubmissions'
 import { useDeleteReview } from '@/features/reviews/hooks/useReviews'
+import { useConfirmStore } from '@/components/confirm-dialog/confirm.store'
 import type { ActionConfig } from '@/components/table/types'
 import type { Submissions } from '../types/submissions.types'
 import type { SubmissionReview } from '@/features/reviews/types/reviews.types'
@@ -25,27 +26,41 @@ export function useSubmissionsTableActions(): ActionConfig<Submissions>[] {
   const { mutate: removeSubmission } = useDeleteSubmission()
   const { mutate: reject } = useRejectSubmission()
   const { mutate: removeReview } = useDeleteReview()
+  const { ask } = useConfirmStore()
 
   return useMemo(() => {
     if (!user) return []
 
     if (user.role === 'STUDENT') return [
       { label: 'Edit', onClick: (row) => openEditSubmission(row) },
-      { label: 'Delete', onClick: (row) => removeSubmission(row.id) },
+      {
+        label: 'Delete',
+        onClick: (row) => ask({
+          title: 'Delete Submission',
+          description: `Are you sure you want to delete "${row.topic}"?`,
+          confirmLabel: 'Delete',
+          variant: 'destructive',
+          onConfirm: () => removeSubmission(row.id),
+        }),
+      },
     ]
 
     if (user.role === 'TEACHER') return [
       {
         label: 'Approve',
-        visible: (row) =>
-          row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
+        visible: (row) => row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
         onClick: (row) => openApprove(row),
       },
       {
         label: 'Reject',
-        visible: (row) =>
-          row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
-        onClick: (row) => reject(row.id),
+        visible: (row) => row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
+        onClick: (row) => ask({
+          title: 'Reject Submission',
+          description: `Reject "${row.topic}"? This cannot be undone.`,
+          confirmLabel: 'Reject',
+          variant: 'destructive',
+          onConfirm: () => reject(row.id),
+        }),
       },
       {
         label: 'Add Review',
@@ -81,11 +96,17 @@ export function useSubmissionsTableActions(): ActionConfig<Submissions>[] {
         onClick: (row) => {
           const type = getUserReviewType(row, user.id)!
           const review = row.reviews.find((r) => r.type === type)!
-          removeReview(review.id)
+          ask({
+            title: 'Delete Review',
+            description: `Delete your ${type.toLowerCase()} review for "${row.topic}"?`,
+            confirmLabel: 'Delete',
+            variant: 'destructive',
+            onConfirm: () => removeReview(review.id),
+          })
         },
       },
     ]
 
     return []
-  }, [user, openEditSubmission, openApprove, openCreateReview, openEditReview, removeSubmission, reject, removeReview])
+  }, [user, openEditSubmission, openApprove, openCreateReview, openEditReview, removeSubmission, reject, removeReview, ask])
 }
