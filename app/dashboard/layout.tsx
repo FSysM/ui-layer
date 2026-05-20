@@ -6,6 +6,8 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Sidepanel } from "@/components/layout/Sidepanel";
 import PageHeader from "@/components/layout/PageHeader";
 import { GlobalConfirmDialog } from "@/components/confirm-dialog/GlobalConfirmDialog";
+import { Toaster } from "sonner";
+import { NotificationSocketInitializer } from "@/features/notifications/components/NotificationSocketInitializer";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -31,6 +33,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </main>
         </SidebarInset>
       </SidebarProvider>
+      <NotificationSocketInitializer />
+      <Toaster />
       <GlobalConfirmDialog />
       </>
   );
