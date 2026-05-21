@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   listSubmissionFiles,
   getSubmissionUploadUrl,
@@ -31,7 +32,11 @@ export function useUploadSubmissionFile(submissionId: string) {
         size: file.size,
       })
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKey(submissionId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey(submissionId) })
+      toast.success('File uploaded')
+    },
+    onError: () => toast.error('Failed to upload file'),
   })
 }
 
@@ -40,6 +45,10 @@ export function useDeleteSubmissionFile(submissionId: string) {
 
   return useMutation({
     mutationFn: (fileId: string) => deleteSubmissionFile(submissionId, fileId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKey(submissionId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey(submissionId) })
+      toast.success('File deleted')
+    },
+    onError: () => toast.error('Failed to delete file'),
   })
 }

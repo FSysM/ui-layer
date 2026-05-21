@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
 	getAssignments,
 	createAssignment,
@@ -25,7 +26,9 @@ export const useCreateAssignment = () => {
 		mutationFn: createAssignment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			toast.success('Assignment created');
 		},
+		onError: () => toast.error('Failed to create assignment'),
 	});
 };
 
@@ -36,7 +39,9 @@ export const useUpdateAssignment = () => {
 		mutationFn: updateAssignment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			toast.success('Assignment saved');
 		},
+		onError: () => toast.error('Failed to save assignment'),
 	});
 };
 
@@ -47,7 +52,9 @@ export const useDeleteAssignment = () => {
 		mutationFn: deleteAssignment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			toast.success('Assignment deleted');
 		},
+		onError: () => toast.error('Failed to delete assignment'),
 	});
 };
 
@@ -58,7 +65,9 @@ export const usePickAssignment = () => {
 		mutationFn: pickAssignment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			toast.success('Assignment picked');
 		},
+		onError: () => toast.error('Failed to pick assignment'),
 	});
 };
 
@@ -69,6 +78,8 @@ export const useUnpickAssignment = () => {
 		mutationFn: unpickAssignment,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+			toast.success('Assignment unpicked');
 		},
+		onError: () => toast.error('Failed to unpick assignment'),
 	});
 };

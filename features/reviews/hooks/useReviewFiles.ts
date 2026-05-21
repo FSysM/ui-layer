@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   listReviewFiles,
   getReviewUploadUrl,
@@ -30,7 +31,11 @@ export function useUploadReviewFile(reviewId: string) {
         size: file.size,
       })
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKey(reviewId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey(reviewId) })
+      toast.success('File uploaded')
+    },
+    onError: () => toast.error('Failed to upload file'),
   })
 }
 
@@ -39,6 +44,10 @@ export function useDeleteReviewFile(reviewId: string) {
 
   return useMutation({
     mutationFn: (fileId: string) => deleteReviewFile(reviewId, fileId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKey(reviewId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey(reviewId) })
+      toast.success('File deleted')
+    },
+    onError: () => toast.error('Failed to delete file'),
   })
 }

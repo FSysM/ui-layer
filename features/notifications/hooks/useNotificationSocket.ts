@@ -31,12 +31,22 @@ export function useNotificationSocket() {
 
     const socket = connectNotificationSocket(token);
 
+    socket.on('connect', () => {
+      console.log('[notifications] socket connected, id:', socket.id);
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('[notifications] socket connection error:', err.message);
+    });
+
     socket.on('notification', (data: NotificationData) => {
       showToast(data);
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unreadCount'] });
     });
 
     return () => {
+      socket.off('connect');
+      socket.off('connect_error');
       socket.off('notification');
       disconnectNotificationSocket();
     };
