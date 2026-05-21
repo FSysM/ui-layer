@@ -1,6 +1,5 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle }  from "./header/ThemeToggle";
-import { LanguageSelector } from "./header/LanguageSelector";
 import { NotificationButton } from "./header/NotificationButton";
 import { UserMenu } from "./header/UserMenu";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-3 px-2">
         <ThemeToggle />
-        <LanguageSelector />
         <NotificationButton />
         {isAuthenticated ? (
           <UserMenu />
