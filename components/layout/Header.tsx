@@ -1,6 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle }  from "./header/ThemeToggle";
-import { NotificationButton } from "./header/NotificationButton";
+import { NotificationDropdown } from "./header/NotificationDropdown";
 import { UserMenu } from "./header/UserMenu";
 import { Button } from "@/components/ui/button";
 import { useMe } from "@/features/auth/hooks/useMe";
@@ -22,7 +22,7 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-3 px-2">
         <ThemeToggle />
-        <NotificationButton />
+        <NotificationDropdown />
         {isAuthenticated ? (
           <UserMenu />
         ) : (
