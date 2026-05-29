@@ -11,8 +11,7 @@ import type { User } from "@/features/auth/types/auth.types";
 export default function Header({ user }: { user: User | null }) {
   const router = useRouter()
 
-  const isGuest = user?.role === 'GUEST'
-  const isAuthenticated = user && !isGuest
+  const isAuthenticated = !!user
 
   return (
     <header
@@ -23,7 +22,7 @@ export default function Header({ user }: { user: User | null }) {
       </div>
       <div className="flex items-center gap-3 px-2">
         <ThemeToggle />
-        <NotificationDropdown />
+        {isAuthenticated && <NotificationDropdown />}
         {isAuthenticated ? (
           <UserMenu user={user} />
         ) : (

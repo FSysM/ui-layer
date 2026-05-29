@@ -24,7 +24,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           </main>
         </SidebarInset>
       </SidebarProvider>
-      <NotificationSocketInitializer />
+      {user && <NotificationSocketInitializer />}
       <Toaster />
       <GlobalConfirmDialog />
     </UserProvider>

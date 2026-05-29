@@ -1,6 +1,7 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,18 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useAuthStore } from '@/features/auth/store/auth.store';
-import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const setGuest = useAuthStore((s) => s.setGuest);
-  const router = useRouter();
-
-  function handleContinueAsGuest() {
-    setGuest();
-    router.push('/dashboard/home');
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-sm">
@@ -38,13 +29,8 @@ export default function LoginPage() {
           </Button>
         </CardContent>
         <CardFooter>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleContinueAsGuest}
-          >
-            Continue as a guest
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/dashboard/browse">Continue as a guest</Link>
           </Button>
         </CardFooter>
       </Card>
