@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 import { api } from '@/lib/api';
@@ -11,25 +11,25 @@ export function SessionSync() {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
 
-  // Set token synchronously so the axios interceptor has it before any query fires
-  if (typeof window !== 'undefined' && session?.accessToken) {
-    sessionStorage.setItem('accessToken', session.accessToken);
-  }
-
   useEffect(() => {
     if (status === 'loading') return;
 
-    if (session?.accessToken && !user) {
+    if (session?.error === 'RefreshTokenError') {
+      logout();
+      signOut({ callbackUrl: '/login' });
+      return;
+    }
+
+    if (status === 'authenticated' && !user) {
       api.get('/auth/me').then((res) => {
-        setAuth(res.data, session.accessToken!);
+        setAuth(res.data);
       }).catch(() => {});
     }
 
     if (status === 'unauthenticated') {
-      sessionStorage.removeItem('accessToken');
       logout();
     }
-  }, [session?.accessToken, status]);
+  }, [status, session?.error]);
 
   return null;
 }

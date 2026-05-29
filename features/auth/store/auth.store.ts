@@ -1,24 +1,28 @@
 import { create } from 'zustand';
-import { AuthStore } from '../types/auth.types';
+import { AuthStore, User } from '../types/auth.types';
 
 export const useAuthStore = create<AuthStore>((set) => ({
-	user: null,
-	isGuest: false,
+  user: null,
+  isGuest: false,
 
-	setAuth: (user, token) => {
-		sessionStorage.setItem('accessToken', token);
-		set({ user, isGuest: false });
-	},
+  setAuth: (user: User) => {
+    set({ user, isGuest: false });
+  },
 
-	setGuest: () => {
-		set({
-			user: { id: 'guest', username: 'guest', name: 'Guest', role: 'GUEST' },
-			isGuest: true,
-		});
-	},
+  setGuest: () => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'guest-session=1; path=/; max-age=86400';
+    }
+    set({
+      user: { id: 'guest', username: 'guest', name: 'Guest', role: 'GUEST' },
+      isGuest: true,
+    });
+  },
 
-	logout: () => {
-		sessionStorage.removeItem('accessToken');
-		set({ user: null, isGuest: false });
-	},
+  logout: () => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'guest-session=; path=/; max-age=0';
+    }
+    set({ user: null, isGuest: false });
+  },
 }));

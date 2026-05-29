@@ -11,22 +11,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // First sign-in: store tokens from Keycloak
       if (account) {
         return {
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          idToken: account.id_token,
           expiresAt: account.expires_at,
         };
       }
 
-      // Token still valid
       if (Date.now() < (token.expiresAt as number) * 1000) {
         return token;
       }
 
-      // Access token expired — refresh it
       try {
         const response = await fetch(
           `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
@@ -47,14 +45,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           ...token,
           accessToken: refreshed.access_token,
           refreshToken: refreshed.refresh_token ?? token.refreshToken,
+          idToken: refreshed.id_token ?? token.idToken,
           expiresAt: Math.floor(Date.now() / 1000 + refreshed.expires_in),
+          error: undefined,
         };
       } catch {
         return { ...token, error: 'RefreshTokenError' };
       }
     },
     async session({ session, token }) {
-      session.accessToken = token.accessToken as string;
+      // accessToken stays server-side only (in the encrypted JWT cookie)
+      // Only expose idToken (needed for Keycloak logout) and error state
+      session.idToken = token.idToken as string | undefined;
       session.error = token.error as string | undefined;
       return session;
     },
