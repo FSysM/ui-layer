@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { isSameDay, format } from 'date-fns';
-import { BookOpen, FileText, CheckCircle, Clock, Users } from 'lucide-react';
+import { BookOpen, FileText, CheckCircle, Clock, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
@@ -29,7 +29,9 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export default function HomePage() {
+  const EVENTS_PER_PAGE = 3;
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [eventPage, setEventPage] = useState(0);
 
   const { data: user } = useMe();
   const { data: myAssignmentsRaw = [] } = useAssignments('my');
@@ -94,6 +96,14 @@ export default function HomePage() {
     return events.filter((e) => isSameDay(e.date, selectedDate));
   }, [events, selectedDate]);
 
+  useEffect(() => { setEventPage(0); }, [selectedDate]);
+
+  const totalPages = Math.ceil(selectedEvents.length / EVENTS_PER_PAGE);
+  const pagedEvents = selectedEvents.slice(
+    eventPage * EVENTS_PER_PAGE,
+    (eventPage + 1) * EVENTS_PER_PAGE,
+  );
+
   return (
     <div className="p-6">
       <PageHeader title="Dashboard" />
@@ -116,17 +126,22 @@ export default function HomePage() {
 
       {/* Calendar + Events */}
       <div className="flex flex-col gap-6 lg:flex-row">
-        <Calendar
-          mode="single"
-          selected={selectedDate}
-          onSelect={setSelectedDate}
-          className="rounded-lg border"
-          captionLayout="dropdown"
-          modifiers={{ hasEvent: eventDates }}
-          modifiersClassNames={{
-            hasEvent: '[&>button]:ring-1 [&>button]:ring-primary/60',
-          }}
-        />
+        <div className="hidden lg:flex lg:shrink-0 lg:flex-col lg:gap-3">
+          <h2 className="text-lg font-semibold">Events</h2>
+          <div className="h-80 overflow-hidden rounded-lg border">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              captionLayout="dropdown"
+              fixedWeeks
+              modifiers={{ hasEvent: eventDates }}
+              modifiersClassNames={{
+                hasEvent: '[&>button]:ring-1 [&>button]:ring-primary/60',
+              }}
+            />
+          </div>
+        </div>
 
         <div className="flex-1">
           <h2 className="mb-4 text-lg font-semibold">
@@ -136,29 +151,51 @@ export default function HomePage() {
           {selectedEvents.length === 0 ? (
             <p className="text-sm text-muted-foreground">No events for this day.</p>
           ) : (
-            <div className="flex flex-col gap-2">
-              {selectedEvents.map((event, i) => (
-                <Card key={i}>
-                  <CardContent className="flex items-center gap-3 px-4 py-3">
-                    <div
-                      className={cn(
-                        'h-2 w-2 shrink-0 rounded-full',
-                        event.type === 'assignment' ? 'bg-blue-500' : 'bg-emerald-500'
+            <>
+              <div className="flex flex-col gap-2">
+                {pagedEvents.map((event, i) => (
+                  <Card key={i}>
+                    <CardContent className="flex items-center gap-3 px-4 py-3">
+                      <div
+                        className={cn(
+                          'h-2 w-2 shrink-0 rounded-full',
+                          event.type === 'assignment' ? 'bg-blue-500' : 'bg-emerald-500'
+                        )}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{event.label}</p>
+                        <p className="text-xs capitalize text-muted-foreground">{event.type}</p>
+                      </div>
+                      {event.badge && (
+                        <Badge variant="secondary" className="shrink-0 text-xs capitalize">
+                          {STATUS_LABEL[event.badge] ?? event.badge}
+                        </Badge>
                       )}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{event.label}</p>
-                      <p className="text-xs capitalize text-muted-foreground">{event.type}</p>
-                    </div>
-                    {event.badge && (
-                      <Badge variant="secondary" className="shrink-0 text-xs capitalize">
-                        {STATUS_LABEL[event.badge] ?? event.badge}
-                      </Badge>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
+                  <button
+                    onClick={() => setEventPage((p) => p - 1)}
+                    disabled={eventPage === 0}
+                    className="flex items-center gap-1 disabled:opacity-40"
+                  >
+                    <ChevronLeft className="h-4 w-4" /> Prev
+                  </button>
+                  <span>{eventPage + 1} / {totalPages}</span>
+                  <button
+                    onClick={() => setEventPage((p) => p + 1)}
+                    disabled={eventPage === totalPages - 1}
+                    className="flex items-center gap-1 disabled:opacity-40"
+                  >
+                    Next <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
