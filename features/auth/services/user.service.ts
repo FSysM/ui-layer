@@ -2,7 +2,7 @@ import { api } from '@/lib/api';
 import type { UpdateProfileData } from '../types/auth.types';
 
 export async function getMe() {
-  const res = await api.get('/users/me');
+  const res = await api.get('/auth/me');
   return res.data;
 }
 

@@ -1,8 +1,7 @@
-"use client"
+'use client';
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from "@/components/ui/button"
+import { signIn } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,34 +9,17 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useLogin } from '@/features/auth/hooks/useLogin'
-import { loginSchema, LoginFormData } from '@/features/auth/schemas/login.schema'
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/features/auth/store/auth.store'
-
+} from '@/components/ui/card';
+import { useAuthStore } from '@/features/auth/store/auth.store';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const loginMutation = useLogin()
-  const router = useRouter()
-  const setGuest = useAuthStore((s) => s.setGuest)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  })
-
-  function onSubmit(data: LoginFormData) {
-    loginMutation.mutate(data)
-  }
+  const setGuest = useAuthStore((s) => s.setGuest);
+  const router = useRouter();
 
   function handleContinueAsGuest() {
-    setGuest()
-    router.push('/dashboard/home')
+    setGuest();
+    router.push('/dashboard/home');
   }
 
   return (
@@ -48,64 +30,14 @@ export default function LoginPage() {
           <CardDescription>Login to the app</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              {/* Username Field */}
-              <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  {...register('username')}
-                  aria-invalid={errors.username ? 'true' : 'false'}
-                />
-                {errors.username && (
-                  <span className="text-sm text-red-500">
-                    {errors.username.message}
-                  </span>
-                )}
-              </div>
-
-              {/* Password Field */}
-              <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  {...register('password')}
-                  aria-invalid={errors.password ? 'true' : 'false'}
-                />
-                {errors.password && (
-                  <span className="text-sm text-red-500">
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
-
-              {/* Error message from API */}
-              {loginMutation.error && (
-                <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
-                  {loginMutation.error instanceof Error
-                    ? loginMutation.error.message
-                    : 'Login failed. Please try again.'}
-                </div>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full mt-6"
-              disabled={loginMutation.isPending}
-            >
-              {loginMutation.isPending ? 'Loading...' : 'Login'}
-            </Button>
-          </form>
+          <Button
+            className="w-full"
+            onClick={() => signIn('keycloak', { callbackUrl: '/dashboard/home' })}
+          >
+            Login with Keycloak
+          </Button>
         </CardContent>
-
-        <CardFooter className="flex-col gap-2">
+        <CardFooter>
           <Button
             type="button"
             variant="outline"
@@ -117,5 +49,5 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

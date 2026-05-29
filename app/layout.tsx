@@ -2,7 +2,9 @@ import "./globals.css";
 import { ReactNode } from "react";
 import { JetBrains_Mono as Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { QueryProvider } from '@/providers/query-provider'
+import { QueryProvider } from '@/providers/query-provider';
+import { SessionProvider } from 'next-auth/react';
+import { SessionSync } from '@/components/auth/SessionSync';
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -29,9 +31,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         className={`h-full bg-background font-sans antialiased ${geist.variable}`}
       >
         <main className="h-full ">
-          <QueryProvider>
-            {children}
-          </QueryProvider>
+          <SessionProvider>
+            <QueryProvider>
+              <SessionSync />
+              {children}
+            </QueryProvider>
+          </SessionProvider>
         </main>
       </body>
       </html>
