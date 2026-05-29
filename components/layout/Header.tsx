@@ -1,14 +1,15 @@
+'use client';
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle }  from "./header/ThemeToggle";
 import { NotificationDropdown } from "./header/NotificationDropdown";
 import { UserMenu } from "./header/UserMenu";
 import { Button } from "@/components/ui/button";
-import { useMe } from "@/features/auth/hooks/useMe";
 import { useRouter } from "next/navigation";
+import type { User } from "@/features/auth/types/auth.types";
 
-export default function Header() {
+export default function Header({ user }: { user: User | null }) {
   const router = useRouter()
-  const { data: user } = useMe()
 
   const isGuest = user?.role === 'GUEST'
   const isAuthenticated = user && !isGuest
@@ -24,7 +25,7 @@ export default function Header() {
         <ThemeToggle />
         <NotificationDropdown />
         {isAuthenticated ? (
-          <UserMenu />
+          <UserMenu user={user} />
         ) : (
           <Button onClick={() => router.push("/login")}>
             Login

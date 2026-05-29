@@ -1,3 +1,5 @@
+'use client';
+
 import { Home, Compass, BookOpen } from "lucide-react";
 import {
   Sidebar,
@@ -9,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useMe } from "@/features/auth/hooks/useMe"
+import type { User } from "@/features/auth/types/auth.types";
 
 const sidebarItems = [
   { name: "Home", href: "/dashboard/home", icon: Home, public: false },
@@ -18,8 +20,7 @@ const sidebarItems = [
   { name: "Submissions", href: "/dashboard/submissions", icon: BookOpen, public: false },
 ];
 
-export function Sidepanel() {
-  const { data: user } = useMe()
+export function Sidepanel({ user }: { user: User | null }) {
 
   return (
     <Sidebar className="w-64" >

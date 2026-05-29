@@ -18,11 +18,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useMe } from "@/features/auth/hooks/useMe"
 import { useLogout } from "@/features/auth/hooks/useLogout"
+import type { User } from "@/features/auth/types/auth.types"
 
-export function UserMenu() {
-  const { data: user } = useMe()
+export function UserMenu({ user }: { user: User | null }) {
   const handleLogout = useLogout()
 
   return (
