@@ -1,6 +1,6 @@
 "use client"
 
-import { User, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -52,7 +52,6 @@ export function UserMenu({ user }: { user: User | null }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
                       <a href={"/dashboard/profile"}>
                         <span>Profile</span>
                       </a>

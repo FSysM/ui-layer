@@ -54,6 +54,7 @@ function ReviewSection({ review }: { review: SubmissionReview }) {
         {files && files.length > 0 ? files.map((file) => (
           <FileRow
             key={file.id}
+            fileId={file.id}
             filename={file.filename}
             size={file.size}
             onReplace={(newFile) => upload(newFile)}

@@ -26,7 +26,7 @@ export type FieldConfig =
 
 export type FormConfig = {
   title: string
-  schema: ZodType
+  schema: ZodType<any, any>
   defaultValues: Record<string, any>
   fields: FieldConfig[]
 }
