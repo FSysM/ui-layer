@@ -2,7 +2,8 @@ import type { DefaultSession } from 'next-auth';
 
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    idToken?: string;  // Used server-side for Keycloak logout only
+    idToken?: string;
+    accessToken?: string;
     error?: string;
   }
 }

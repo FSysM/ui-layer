@@ -54,9 +54,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     },
     async session({ session, token }) {
-      // accessToken stays server-side only (in the encrypted JWT cookie)
-      // Only expose idToken (needed for Keycloak logout) and error state
       session.idToken = token.idToken as string | undefined;
+      session.accessToken = token.accessToken as string | undefined;
       session.error = token.error as string | undefined;
       return session;
     },

@@ -1,4 +1,4 @@
-import { getToken } from 'next-auth/jwt';
+import { auth } from '@/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:3003';
@@ -7,14 +7,14 @@ async function handler(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> },
 ) {
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET });
+  const session = await auth();
 
   const { path } = await params;
   const url = `${BACKEND}/${path.join('/')}${request.nextUrl.search}`;
 
   const headers = new Headers();
-  if (token?.accessToken) {
-    headers.set('Authorization', `Bearer ${token.accessToken as string}`);
+  if (session?.accessToken) {
+    headers.set('Authorization', `Bearer ${session.accessToken as string}`);
   }
 
   const contentType = request.headers.get('content-type');
