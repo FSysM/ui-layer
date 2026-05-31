@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
-const WS_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3003';
+const WS_BASE = process.env.NEXT_PUBLIC_NOTIFICATION_URL
+  ?? (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3004');
 
 let socket: Socket | null = null;
 

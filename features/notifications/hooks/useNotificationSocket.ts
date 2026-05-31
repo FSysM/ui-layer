@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
 import {
   connectNotificationSocket,
   disconnectNotificationSocket,
@@ -24,9 +25,10 @@ function showToast(data: NotificationData) {
 
 export function useNotificationSocket() {
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('accessToken');
+    const token = session?.accessToken;
     if (!token) return;
 
     const socket = connectNotificationSocket(token);
@@ -50,5 +52,5 @@ export function useNotificationSocket() {
       socket.off('notification');
       disconnectNotificationSocket();
     };
-  }, [queryClient]);
+  }, [queryClient, session?.accessToken]);
 }

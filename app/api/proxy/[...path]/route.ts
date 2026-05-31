@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:3003';
+const NOTIFICATION_SERVICE = process.env.NOTIFICATION_SERVICE_URL ?? 'http://localhost:3004';
 
 async function handler(
   request: NextRequest,
@@ -10,7 +11,8 @@ async function handler(
   const session = await auth();
 
   const { path } = await params;
-  const url = `${BACKEND}/${path.join('/')}${request.nextUrl.search}`;
+  const baseUrl = path[0] === 'notifications' ? NOTIFICATION_SERVICE : BACKEND;
+  const url = `${baseUrl}/${path.join('/')}${request.nextUrl.search}`;
 
   const headers = new Headers();
   if (session?.accessToken) {
