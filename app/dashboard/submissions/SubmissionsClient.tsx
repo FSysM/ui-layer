@@ -87,10 +87,11 @@ export function SubmissionsClient({ user }: { user: User | null }) {
 
   const studentAssignments = useMemo(() => {
     if (user?.role !== 'STUDENT') return allAssignments ?? []
+    const submittedAssignmentIds = new Set((submissions ?? []).map((s: { assignment: { id: string } }) => s.assignment.id))
     return (allAssignments ?? []).filter(
-      (a) => a.taken && a.student?.id === user.id
+      (a) => a.taken && a.student?.id === user.id && !submittedAssignmentIds.has(a.id)
     )
-  }, [allAssignments, user])
+  }, [allAssignments, user, submissions])
 
   const createSubConfig = useMemo(() => createSubmissionFormConfig(
     studentAssignments,
