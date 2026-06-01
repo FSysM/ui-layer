@@ -32,9 +32,14 @@ export function useSubmissionsTableActions(): ActionConfig<Submissions>[] {
     if (!user) return []
 
     if (user.role === 'STUDENT') return [
-      { label: 'Edit', onClick: (row) => openEditSubmission(row) },
+      {
+        label: 'Edit',
+        visible: (row) => row.status !== 'COMPLETED',
+        onClick: (row) => openEditSubmission(row),
+      },
       {
         label: 'Delete',
+        visible: (row) => row.status !== 'COMPLETED',
         onClick: (row) => ask({
           title: 'Delete Submission',
           description: `Are you sure you want to delete "${row.topic}"?`,

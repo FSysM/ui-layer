@@ -6,6 +6,7 @@ import { Field } from "@/components/table/components/expand"
 import { FileRow } from "@/components/file-upload/FileRow"
 import { useSubmissionFiles, useUploadSubmissionFile, useDeleteSubmissionFile } from "./hooks/useSubmissionFiles"
 import { useReviewFiles, useUploadReviewFile, useDeleteReviewFile } from "@/features/reviews/hooks/useReviewFiles"
+import { useMe } from "@/features/auth/hooks/useMe"
 import type { ActionConfig } from "@/components/table/types"
 import type { Submissions } from "./types/submissions.types"
 import type { SubmissionReview } from "@/features/reviews/types/reviews.types"
@@ -42,6 +43,8 @@ function ReviewSection({ review }: { review: SubmissionReview }) {
   const { data: files } = useReviewFiles(review.id)
   const { mutate: upload, isPending: isUploading } = useUploadReviewFile(review.id)
   const { mutate: remove, isPending: isDeleting } = useDeleteReviewFile(review.id)
+  const { data: me } = useMe()
+  const isStudent = me?.role === 'STUDENT'
 
   return (
     <div className="space-y-1.5">
@@ -61,6 +64,7 @@ function ReviewSection({ review }: { review: SubmissionReview }) {
             onDelete={() => remove(file.id)}
             isUploading={isUploading}
             isDeleting={isDeleting}
+            readOnly={isStudent}
           />
         )) : (
           <p className="text-xs text-muted-foreground">No review document</p>

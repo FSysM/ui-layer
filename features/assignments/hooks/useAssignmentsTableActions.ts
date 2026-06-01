@@ -16,9 +16,14 @@ export function useAssignmentsTableActions(): ActionConfig<Assignments>[] {
 
   return useMemo(() => {
     if (user?.role === 'TEACHER') return [
-      { label: 'Edit', onClick: (row) => openEdit(row) },
+      {
+        label: 'Edit',
+        visible: (row) => row.supervisor.id === user.id,
+        onClick: (row) => openEdit(row),
+      },
       {
         label: 'Delete',
+        visible: (row) => row.supervisor.id === user.id,
         onClick: (row) => ask({
           title: 'Delete Assignment',
           description: `Are you sure you want to delete "${row.topic}"?`,
