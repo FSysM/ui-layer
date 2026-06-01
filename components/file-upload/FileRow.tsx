@@ -20,9 +20,10 @@ interface FileRowProps {
   onDelete: () => void
   isUploading?: boolean
   isDeleting?: boolean
+  readOnly?: boolean
 }
 
-export function FileRow({ fileId, filename, size, onReplace, onDelete, isUploading = false, isDeleting = false }: FileRowProps) {
+export function FileRow({ fileId, filename, size, onReplace, onDelete, isUploading = false, isDeleting = false, readOnly = false }: FileRowProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -52,13 +53,17 @@ export function FileRow({ fileId, filename, size, onReplace, onDelete, isUploadi
         {isDownloading ? <Loader2 className="animate-spin" /> : <Download />}
       </Button>
 
-      <Button type="button" variant="ghost" size="icon-sm" disabled={busy} onClick={() => inputRef.current?.click()} title="Replace file">
-        {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
-      </Button>
+      {!readOnly && (
+        <Button type="button" variant="ghost" size="icon-sm" disabled={busy} onClick={() => inputRef.current?.click()} title="Replace file">
+          {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
+        </Button>
+      )}
 
-      <Button type="button" variant="ghost" size="icon-sm" disabled={busy} onClick={onDelete} title="Delete file">
-        {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
-      </Button>
+      {!readOnly && (
+        <Button type="button" variant="ghost" size="icon-sm" disabled={busy} onClick={onDelete} title="Delete file">
+          {isDeleting ? <Loader2 className="animate-spin" /> : <Trash2 />}
+        </Button>
+      )}
 
       <input ref={inputRef} type="file" className="hidden" onChange={handleChange} />
     </div>
