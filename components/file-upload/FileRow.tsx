@@ -36,7 +36,10 @@ export function FileRow({ fileId, filename, size, onReplace, onDelete, isUploadi
     setIsDownloading(true)
     try {
       const url = await getFileDownloadUrl(fileId)
-      window.open(url, '_blank')
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
     } finally {
       setIsDownloading(false)
     }

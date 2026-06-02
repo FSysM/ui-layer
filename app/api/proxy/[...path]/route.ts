@@ -28,6 +28,11 @@ async function handler(
       : undefined;
 
   const upstream = await fetch(url, { method: request.method, headers, body });
+
+  if (upstream.status === 204) {
+    return new NextResponse(null, { status: 204 });
+  }
+
   const data = await upstream.json().catch(() => null);
 
   return NextResponse.json(data, { status: upstream.status });
