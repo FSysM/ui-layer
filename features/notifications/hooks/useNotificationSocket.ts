@@ -43,13 +43,19 @@ export function useNotificationSocket() {
 
     socket.on('notification', (data: NotificationData) => {
       showToast(data);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['notifications', 'unreadCount'] });
+    });
+
+    socket.on('data-sync', (data: { queryKey: string[] }) => {
+      queryClient.invalidateQueries({ queryKey: data.queryKey });
     });
 
     return () => {
       socket.off('connect');
       socket.off('connect_error');
       socket.off('notification');
+      socket.off('data-sync');
       disconnectNotificationSocket();
     };
   }, [queryClient, session?.accessToken]);
