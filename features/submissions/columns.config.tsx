@@ -15,6 +15,8 @@ function MainFilesSection({ submissionId }: { submissionId: string }) {
   const { data: files } = useSubmissionFiles(submissionId)
   const { mutate: upload, isPending: isUploading } = useUploadSubmissionFile(submissionId)
   const { mutate: remove, isPending: isDeleting } = useDeleteSubmissionFile(submissionId)
+  const { data: me } = useMe()
+  const isStudent = me?.role === 'STUDENT'
 
   const mainFiles = files?.filter((f) => f.folder === 'TEXT') ?? []
 
@@ -31,6 +33,7 @@ function MainFilesSection({ submissionId }: { submissionId: string }) {
           onDelete={() => remove(file.id)}
           isUploading={isUploading}
           isDeleting={isDeleting}
+          readOnly={!isStudent}
         />
       )) : (
         <p className="text-xs text-muted-foreground">No files uploaded</p>

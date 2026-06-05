@@ -22,8 +22,9 @@ type CalendarEvent = {
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In progress',
+  SUBMITTED: 'Submitted',
+  APPROVED: 'Approved',
+  REVIEWING: 'Reviewing',
   COMPLETED: 'Completed',
   REJECTED: 'Rejected',
 };
@@ -43,7 +44,7 @@ export default function HomeClient() {
   const role = user?.role;
 
   const takenCount = myAssignments.filter((a) => a.taken).length;
-  const pendingCount = submissions.filter((s) => s.status === 'PENDING' || s.status === 'IN_PROGRESS').length;
+  const pendingCount = submissions.filter((s) => ['SUBMITTED', 'APPROVED', 'REVIEWING'].includes(s.status)).length;
   const completedCount = submissions.filter((s) => s.status === 'COMPLETED').length;
 
   const stats =

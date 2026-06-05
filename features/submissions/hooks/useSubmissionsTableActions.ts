@@ -53,12 +53,12 @@ export function useSubmissionsTableActions(): ActionConfig<Submissions>[] {
     if (user.role === 'TEACHER') return [
       {
         label: 'Approve',
-        visible: (row) => row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
+        visible: (row) => row.status === 'SUBMITTED' && row.assignment.supervisor.id === user.id,
         onClick: (row) => openApprove(row),
       },
       {
         label: 'Reject',
-        visible: (row) => row.status === 'PENDING' && row.assignment.supervisor.id === user.id,
+        visible: (row) => row.status === 'SUBMITTED' && row.assignment.supervisor.id === user.id,
         onClick: (row) => ask({
           title: 'Reject Submission',
           description: `Reject "${row.topic}"? This cannot be undone.`,
@@ -70,7 +70,7 @@ export function useSubmissionsTableActions(): ActionConfig<Submissions>[] {
       {
         label: 'Add Review',
         visible: (row) => {
-          if (row.status !== 'COMPLETED') return false
+          if (row.status !== 'APPROVED' && row.status !== 'REVIEWING') return false
           const type = getUserReviewType(row, user.id)
           if (!type) return false
           return !row.reviews.some((r) => r.type === type)
