@@ -22,7 +22,7 @@ export type Submissions = {
     assignmentDate: string;
     student: { id: string; name: string | null } | null;
     supervisor: { id: string; name: string };
-  };
+  } | null;
 
   opponent: { id: string; name: string | null } | null;
 

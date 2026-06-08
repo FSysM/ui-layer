@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND = process.env.BACKEND_URL ?? 'http://localhost:3003';
 const NOTIFICATION_SERVICE = process.env.NOTIFICATION_SERVICE_URL ?? 'http://localhost:3004';
+const USER_SERVICE = process.env.USER_SERVICE_URL ?? 'http://localhost:3006';
 
 async function handler(
   request: NextRequest,
@@ -11,7 +12,10 @@ async function handler(
   const session = await auth();
 
   const { path } = await params;
-  const baseUrl = path[0] === 'notifications' ? NOTIFICATION_SERVICE : BACKEND;
+  const baseUrl =
+    path[0] === 'notifications' ? NOTIFICATION_SERVICE :
+    path[0] === 'auth' || path[0] === 'users' ? USER_SERVICE :
+    BACKEND;
   const url = `${baseUrl}/${path.join('/')}${request.nextUrl.search}`;
 
   const headers = new Headers();

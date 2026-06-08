@@ -16,7 +16,7 @@ export function assignmentToForm(assignment: Assignments): SubmissionFormModel {
 
 export function submissionToForm(submission: Submissions): SubmissionFormModel {
   return {
-    assignmentId: submission.assignment.id,
+    assignmentId: submission.assignment?.id ?? '',
     topic: submission.topic,
     type: submission.type,
     faculty: submission.faculty,

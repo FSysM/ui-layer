@@ -7,7 +7,7 @@ async function fetchUser(): Promise<User | null> {
     const session = await auth();
     if (!session?.accessToken) return null;
 
-    const res = await fetch(`${process.env.BACKEND_URL}/auth/me`, {
+    const res = await fetch(`${process.env.USER_SERVICE_URL}/auth/me`, {
       headers: { Authorization: `Bearer ${session.accessToken}` },
       cache: 'no-store',
     });
